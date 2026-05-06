@@ -1,0 +1,145 @@
+/* ═══════════════════════════════════════════════════
+   Dark Mode Overrides — Soft dark theme
+   ═══════════════════════════════════════════════════ */
+
+/* 1. Main background - soft dark gray (not pitch black) */
+[data-bs-theme="dark"] body,
+[data-bs-theme="dark"] .bg-body {
+    background-color: #202124 !important;
+}
+
+[data-bs-theme="dark"] .navbar.bg-body {
+    background-color: #292b2e !important;
+    border-bottom-color: #3c4043 !important;
+}
+
+[data-bs-theme="dark"] aside.bg-body {
+    background-color: #292b2e !important;
+    border-right-color: #3c4043 !important;
+}
+
+/* 2. Note grid cards — light gray (not white, not too dark) */
+[data-bs-theme="dark"] .note-card-grid {
+    background-color: #3c4043 !important;
+    color: #e8eaed !important;
+    border-color: #5f6368 !important;
+}
+
+[data-bs-theme="dark"] .note-card-grid .card-title,
+[data-bs-theme="dark"] .note-card-grid .card-text,
+[data-bs-theme="dark"] .note-card-grid .fw-semibold {
+    color: #e8eaed !important;
+}
+
+[data-bs-theme="dark"] .note-card-grid .text-muted {
+    color: #9aa0a6 !important;
+}
+
+[data-bs-theme="dark"] .note-card-grid .btn-link.text-secondary {
+    color: #9aa0a6 !important;
+}
+
+/* 3. Note list rows — same gray tone */
+[data-bs-theme="dark"] .note-card-list {
+    background-color: #3c4043 !important;
+    color: #e8eaed !important;
+    border-color: #5f6368 !important;
+}
+
+[data-bs-theme="dark"] .note-card-list:hover {
+    background-color: #444749 !important;
+}
+
+[data-bs-theme="dark"] .note-card-list .text-muted {
+    color: #9aa0a6 !important;
+}
+
+[data-bs-theme="dark"] .note-card-list .fw-semibold {
+    color: #e8eaed !important;
+}
+
+/* 4. Dropdown menus */
+[data-bs-theme="dark"] .dropdown-menu {
+    background-color: #2d2f31 !important;
+    border-color: #3c4043 !important;
+}
+
+[data-bs-theme="dark"] .dropdown-item {
+    color: #e8eaed !important;
+}
+
+[data-bs-theme="dark"] .dropdown-item:hover {
+    background-color: #3c4043 !important;
+}
+
+[data-bs-theme="dark"] .dropdown-divider {
+    border-color: #3c4043 !important;
+}
+
+/* 5. Labels sidebar — blue text in dark mode */
+[data-bs-theme="dark"] .btn-link.text-dark {
+    color: #8ab4f8 !important;
+}
+[data-bs-theme="dark"] .btn-link.text-dark:hover {
+    color: #aecbfa !important;
+}
+
+/* 6. Search bar + inputs */
+[data-bs-theme="dark"] .form-control {
+    background-color: #3c4043 !important;
+    border-color: #5f6368 !important;
+    color: #e8eaed !important;
+}
+
+[data-bs-theme="dark"] .form-control::placeholder {
+    color: #9aa0a6 !important;
+}
+
+/* 7. Modal (note editor) */
+[data-bs-theme="dark"] .modal-content {
+    background-color: #292b2e !important;
+    color: #e8eaed !important;
+    border-color: #3c4043 !important;
+}
+
+[data-bs-theme="dark"] .modal-content .form-control {
+    background-color: #292b2e !important;
+    color: #e8eaed !important;
+}
+
+[data-bs-theme="dark"] .modal-content hr {
+    border-color: #3c4043 !important;
+}
+
+/* 8. Settings/other cards */
+[data-bs-theme="dark"] .card:not(.note-card-grid) {
+    background-color: #292b2e !important;
+    border-color: #3c4043 !important;
+    color: #e8eaed !important;
+}
+
+/* 9. Avatar button — remove Bootstrap dropdown caret + perfect circle */
+.avatar-btn {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 2px solid #e5e7eb !important;
+    background: #f3f4f6 !important;
+    flex-shrink: 0;
+}
+/* Hide the dropdown arrow caret on avatar button */
+.avatar-btn::after {
+    display: none !important;
+}
+.avatar-btn img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    border-radius: 50%;
+}
