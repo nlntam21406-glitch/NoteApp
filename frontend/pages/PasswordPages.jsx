@@ -6,7 +6,23 @@ import api from '../api/axios';
 export function ForgotPasswordPage() {
     const [email, setEmail] = useState(''); const [method, setMethod] = useState('link');
     const [msg, setMsg] = useState(''); const [err, setErr] = useState(''); const [load, setLoad] = useState(false);
-    const submit = async e => { e.preventDefault(); setMsg(''); setErr(''); setLoad(true); try { const {data}=await api.post('/auth/forgot-password',{email,method}); setMsg(data.message); } catch(e){ setErr(e.response?.data?.message||'Error'); } finally { setLoad(false); } };
+    const navigate = useNavigate();
+    const submit = async e => {
+        e.preventDefault(); setMsg(''); setErr(''); setLoad(true);
+        try {
+            const {data} = await api.post('/auth/forgot-password', {email, method});
+            if (method === 'otp') {
+                // Redirect sang trang nhập OTP, email đã điền sẵn
+                navigate(`/reset-password?email=${encodeURIComponent(email)}`);
+            } else {
+                setMsg(data.message);
+            }
+        } catch(e) {
+            setErr(e.response?.data?.message || 'Error');
+        } finally {
+            setLoad(false);
+        }
+    };
     return (
         <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
             <div className="card shadow-sm" style={{width:'100%',maxWidth:420}}><div className="card-body p-4">
