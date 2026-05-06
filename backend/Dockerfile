@@ -24,6 +24,7 @@ COPY bootstrap_app.php bootstrap/app.php
 COPY .env.docker    .env
 
 RUN chown -R www-data:www-data storage bootstrap/cache \
+    && php artisan key:generate --force --quiet \
     && composer dump-autoload --optimize --quiet
 
 EXPOSE 8000 8080
