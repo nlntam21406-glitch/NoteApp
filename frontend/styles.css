@@ -1,8 +1,11 @@
 /* ═══════════════════════════════════════════════════
-   Dark Mode Overrides — Soft dark theme
+   DARK MODE + RESPONSIVE MOBILE FIX
    ═══════════════════════════════════════════════════ */
 
-/* 1. Main background - soft dark gray (not pitch black) */
+/* =================================================
+   1. DARK MODE
+================================================= */
+
 [data-bs-theme="dark"] body,
 [data-bs-theme="dark"] .bg-body {
     background-color: #202124 !important;
@@ -18,7 +21,10 @@
     border-right-color: #3c4043 !important;
 }
 
-/* 2. Note grid cards — light gray (not white, not too dark) */
+/* =================================================
+   2. NOTE GRID CARDS
+================================================= */
+
 [data-bs-theme="dark"] .note-card-grid {
     background-color: #3c4043 !important;
     color: #e8eaed !important;
@@ -39,7 +45,10 @@
     color: #9aa0a6 !important;
 }
 
-/* 3. Note list rows — same gray tone */
+/* =================================================
+   3. NOTE LIST
+================================================= */
+
 [data-bs-theme="dark"] .note-card-list {
     background-color: #3c4043 !important;
     color: #e8eaed !important;
@@ -58,7 +67,10 @@
     color: #e8eaed !important;
 }
 
-/* 4. Dropdown menus */
+/* =================================================
+   4. DROPDOWN
+================================================= */
+
 [data-bs-theme="dark"] .dropdown-menu {
     background-color: #2d2f31 !important;
     border-color: #3c4043 !important;
@@ -76,15 +88,22 @@
     border-color: #3c4043 !important;
 }
 
-/* 5. Labels sidebar — blue text in dark mode */
+/* =================================================
+   5. SIDEBAR LABELS
+================================================= */
+
 [data-bs-theme="dark"] .btn-link.text-dark {
     color: #8ab4f8 !important;
 }
+
 [data-bs-theme="dark"] .btn-link.text-dark:hover {
     color: #aecbfa !important;
 }
 
-/* 6. Search bar + inputs */
+/* =================================================
+   6. INPUTS + SEARCH BAR
+================================================= */
+
 [data-bs-theme="dark"] .form-control {
     background-color: #3c4043 !important;
     border-color: #5f6368 !important;
@@ -95,7 +114,10 @@
     color: #9aa0a6 !important;
 }
 
-/* 7. Modal (note editor) */
+/* =================================================
+   7. MODAL
+================================================= */
+
 [data-bs-theme="dark"] .modal-content {
     background-color: #292b2e !important;
     color: #e8eaed !important;
@@ -111,14 +133,20 @@
     border-color: #3c4043 !important;
 }
 
-/* 8. Settings/other cards */
+/* =================================================
+   8. SETTINGS CARD
+================================================= */
+
 [data-bs-theme="dark"] .card:not(.note-card-grid) {
     background-color: #292b2e !important;
     border-color: #3c4043 !important;
     color: #e8eaed !important;
 }
 
-/* 9. Avatar button — remove Bootstrap dropdown caret + perfect circle */
+/* =================================================
+   9. AVATAR BUTTON
+================================================= */
+
 .avatar-btn {
     width: 32px !important;
     height: 32px !important;
@@ -132,14 +160,143 @@
     background: #f3f4f6 !important;
     flex-shrink: 0;
 }
-/* Hide the dropdown arrow caret on avatar button */
+
 .avatar-btn::after {
     display: none !important;
 }
+
 .avatar-btn img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
     display: block !important;
     border-radius: 50%;
+}
+
+/* =================================================
+   10. GLOBAL RESPONSIVE
+================================================= */
+
+html,
+body,
+#root {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* =================================================
+   11. NOTES GRID
+================================================= */
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+/* =================================================
+   12. TABLET
+================================================= */
+
+@media (max-width: 992px) {
+
+    .notes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
+    aside {
+        width: 240px !important;
+    }
+}
+
+/* =================================================
+   13. MOBILE
+================================================= */
+
+@media (max-width: 768px) {
+
+    .navbar {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1040 !important;
+
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    /* Mobile search bar */
+    .d-sm-none.px-3.py-2.bg-white.border-bottom {
+        position: sticky !important;
+        top: 56px !important;
+        z-index: 1035 !important;
+        background: white !important;
+    }
+
+    /* Sidebar mobile */
+    aside {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+
+        width: 260px !important;
+        max-width: 80% !important;
+
+        height: 100% !important;
+        max-height: 100% !important;
+
+        overflow-y: auto !important;
+
+        z-index: 1050 !important;
+    }
+
+    main {
+        overflow-x: hidden !important;
+    }
+
+    .notes-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .btn,
+    .dropdown-toggle {
+        white-space: nowrap;
+    }
+
+    .modal-dialog {
+        margin: 10px !important;
+    }
+
+    .form-control {
+        width: 100% !important;
+    }
+}
+
+/* =================================================
+   14. SMALL PHONE
+================================================= */
+
+@media (max-width: 480px) {
+
+    .navbar-brand {
+        font-size: 1rem !important;
+    }
+
+    .avatar-btn {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .note-card-grid,
+    .note-card-list {
+        padding: 12px !important;
+    }
 }
