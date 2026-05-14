@@ -1,63 +1,157 @@
-// LoginPage
+// LoginPage + RegisterPage — improved UI, same functionality
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-export function LoginPage() {
-    const { login } = useAuth(); const navigate = useNavigate();
-    const [f, setF] = useState({email:'',password:''}); const [err, setErr] = useState(''); const [load, setLoad] = useState(false);
-    const submit = async e => { e.preventDefault(); setErr(''); setLoad(true); try { await login(f.email,f.password); navigate('/'); } catch(e) { setErr(e.response?.data?.message||'Login failed.'); } finally { setLoad(false); } };
+/* Shared layout wrapper */
+function AuthLayout({ children, title, subtitle }) {
     return (
-        <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
-            <div className="card shadow-sm" style={{width:'100%',maxWidth:420}}>
-                <div className="card-body p-4">
-                    <h4 className="mb-4 fw-bold text-center">Sign In</h4>
-                    {err && <div className="alert alert-danger py-2">{err}</div>}
-                    <form onSubmit={submit} noValidate>
-                        <div className="mb-3"><label className="form-label">Email address</label><input type="email" className="form-control" value={f.email} onChange={e=>setF({...f,email:e.target.value})} required autoFocus/></div>
-                        <div className="mb-3"><label className="form-label">Password</label><input type="password" className="form-control" value={f.password} onChange={e=>setF({...f,password:e.target.value})} required/></div>
-                        <button type="submit" className="btn btn-primary w-100" disabled={load}>{load?'Signing in…':'Sign In'}</button>
-                    </form>
-                    <div className="text-center mt-3 small"><Link to="/forgot-password">Forgot password?</Link><span className="mx-2">·</span><Link to="/register">Create account</Link></div>
+        <div className="auth-page">
+            <div className="auth-card">
+                <div className="text-center mb-4">
+                    <div className="auth-logo">📝 NoteApp</div>
+                    <h1 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 4 }}>{title}</h1>
+                    <p className="auth-subtitle mb-0">{subtitle}</p>
                 </div>
+                {children}
             </div>
         </div>
     );
 }
 
-export function RegisterPage() {
-    const { register } = useAuth(); const navigate = useNavigate();
-    const [f, setF] = useState({email:'',display_name:'',password:'',password_confirmation:''});
-    const [errs, setErrs] = useState({}); const [load, setLoad] = useState(false);
+/* Reusable field */
+function Field({ label, type = 'text', value, onChange, error, autoFocus, placeholder }) {
+    return (
+        <div className="mb-3">
+            <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text)' }}>
+                {label}
+            </label>
+            <input
+                type={type}
+                className={`form-control${error ? ' is-invalid' : ''}`}
+                value={value}
+                onChange={onChange}
+                required
+                autoFocus={autoFocus}
+                placeholder={placeholder}
+                style={{ fontSize: '0.95rem' }}
+            />
+            {error && <div className="invalid-feedback">{error}</div>}
+        </div>
+    );
+}
+
+export function LoginPage() {
+    const { login } = useAuth();
+    const navigate = useNavigate();
+    const [f, setF] = useState({ email: '', password: '' });
+    const [err, setErr] = useState('');
+    const [load, setLoad] = useState(false);
+
     const submit = async e => {
-        e.preventDefault(); setErrs({});
-        if (f.password!==f.password_confirmation) { setErrs({password_confirmation:'Passwords do not match.'}); return; }
-        setLoad(true);
-        try { await register(f.email,f.display_name,f.password,f.password_confirmation); navigate('/'); }
-        catch(e) { const ae=e.response?.data?.errors; if(ae) setErrs(Object.fromEntries(Object.entries(ae).map(([k,v])=>[k,v[0]]))); else setErrs({general:e.response?.data?.message||'Registration failed.'}); }
+        e.preventDefault(); setErr(''); setLoad(true);
+        try { await login(f.email, f.password); navigate('/'); }
+        catch (e) { setErr(e.response?.data?.message || 'Login failed. Please check your credentials.'); }
         finally { setLoad(false); }
     };
-    const field=(name,label,type='text')=>(
-        <div className="mb-3"><label className="form-label">{label}</label>
-        <input type={type} className={`form-control ${errs[name]?'is-invalid':''}`} value={f[name]} onChange={e=>setF({...f,[name]:e.target.value})} required/>
-        {errs[name]&&<div className="invalid-feedback">{errs[name]}</div>}</div>
-    );
+
     return (
-        <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
-            <div className="card shadow-sm" style={{width:'100%',maxWidth:440}}>
-                <div className="card-body p-4">
-                    <h4 className="mb-4 fw-bold text-center">Create Account</h4>
-                    {errs.general&&<div className="alert alert-danger py-2">{errs.general}</div>}
-                    <form onSubmit={submit} noValidate>
-                        {field('email','Email address','email')}
-                        {field('display_name','Display name')}
-                        {field('password','Password','password')}
-                        {field('password_confirmation','Confirm password','password')}
-                        <button type="submit" className="btn btn-primary w-100 mt-1" disabled={load}>{load?'Creating account…':'Create Account'}</button>
-                    </form>
-                    <div className="text-center mt-3 small">Already have an account? <Link to="/login">Sign in</Link></div>
+        <AuthLayout title="Welcome back" subtitle="Sign in to access your notes">
+            {err && (
+                <div className="alert alert-danger d-flex align-items-center gap-2 py-2 mb-3" style={{ fontSize: '0.875rem' }}>
+                    <span>⚠️</span> {err}
                 </div>
+            )}
+            <form onSubmit={submit} noValidate>
+                <Field label="Email address" type="email" value={f.email}
+                    onChange={e => setF({ ...f, email: e.target.value })}
+                    autoFocus placeholder="you@example.com" />
+                <Field label="Password" type="password" value={f.password}
+                    onChange={e => setF({ ...f, password: e.target.value })}
+                    placeholder="••••••••" />
+
+                <button
+                    type="submit"
+                    className="btn btn-primary w-100 mt-1"
+                    disabled={load}
+                    style={{ padding: '0.65rem', fontSize: '0.95rem', borderRadius: 'var(--radius-md)' }}
+                >
+                    {load ? <><span className="spinner-border spinner-border-sm me-2" role="status"/>Signing in…</> : 'Sign In'}
+                </button>
+            </form>
+
+            <div className="text-center mt-4" style={{ fontSize: '0.875rem' }}>
+                <Link to="/forgot-password" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>
+                    Forgot password?
+                </Link>
+                <span className="mx-2" style={{ color: 'var(--border)' }}>|</span>
+                <Link to="/register" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>
+                    Create account
+                </Link>
             </div>
-        </div>
+        </AuthLayout>
+    );
+}
+
+export function RegisterPage() {
+    const { register } = useAuth();
+    const navigate = useNavigate();
+    const [f, setF] = useState({ email: '', display_name: '', password: '', password_confirmation: '' });
+    const [errs, setErrs] = useState({});
+    const [load, setLoad] = useState(false);
+
+    const submit = async e => {
+        e.preventDefault(); setErrs({});
+        if (f.password !== f.password_confirmation) {
+            setErrs({ password_confirmation: 'Passwords do not match.' }); return;
+        }
+        setLoad(true);
+        try { await register(f.email, f.display_name, f.password, f.password_confirmation); navigate('/'); }
+        catch (e) {
+            const ae = e.response?.data?.errors;
+            if (ae) setErrs(Object.fromEntries(Object.entries(ae).map(([k, v]) => [k, v[0]])));
+            else setErrs({ general: e.response?.data?.message || 'Registration failed.' });
+        }
+        finally { setLoad(false); }
+    };
+
+    return (
+        <AuthLayout title="Create account" subtitle="Start organizing your notes today">
+            {errs.general && (
+                <div className="alert alert-danger d-flex align-items-center gap-2 py-2 mb-3" style={{ fontSize: '0.875rem' }}>
+                    <span>⚠️</span> {errs.general}
+                </div>
+            )}
+            <form onSubmit={submit} noValidate>
+                <Field label="Email address" type="email" value={f.email}
+                    onChange={e => setF({ ...f, email: e.target.value })}
+                    error={errs.email} autoFocus placeholder="you@example.com" />
+                <Field label="Display name" value={f.display_name}
+                    onChange={e => setF({ ...f, display_name: e.target.value })}
+                    error={errs.display_name} placeholder="Your name" />
+                <Field label="Password" type="password" value={f.password}
+                    onChange={e => setF({ ...f, password: e.target.value })}
+                    error={errs.password} placeholder="At least 8 characters" />
+                <Field label="Confirm password" type="password" value={f.password_confirmation}
+                    onChange={e => setF({ ...f, password_confirmation: e.target.value })}
+                    error={errs.password_confirmation} placeholder="Re-enter password" />
+
+                <button
+                    type="submit"
+                    className="btn btn-primary w-100 mt-1"
+                    disabled={load}
+                    style={{ padding: '0.65rem', fontSize: '0.95rem', borderRadius: 'var(--radius-md)' }}
+                >
+                    {load ? <><span className="spinner-border spinner-border-sm me-2" role="status"/>Creating account…</> : 'Create Account'}
+                </button>
+            </form>
+
+            <div className="text-center mt-4" style={{ fontSize: '0.875rem' }}>
+                Already have an account?{' '}
+                <Link to="/login" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>
+                    Sign in
+                </Link>
+            </div>
+        </AuthLayout>
     );
 }

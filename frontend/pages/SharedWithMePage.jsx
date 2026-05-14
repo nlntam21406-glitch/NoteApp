@@ -1,9 +1,9 @@
 // Recipient view: all notes shared with the current user
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getSharedWithMe } from '../api/shareApi';
 import NoteEditor from '../components/NoteEditor';
-import { NoteProvider, useNotes } from '../context/NoteContext';
+import { NoteProvider } from '../context/NoteContext';
 
 function fmt(iso) {
     if (!iso) return '';
@@ -13,7 +13,7 @@ function fmt(iso) {
 function SharedWithMeInner() {
     const [shares,      setShares]      = useState([]);
     const [loading,     setLoading]     = useState(true);
-    const [activeShare, setActiveShare] = useState(null); // { note, permission }
+    const [activeShare, setActiveShare] = useState(null);
 
     useEffect(() => {
         getSharedWithMe()
@@ -22,68 +22,141 @@ function SharedWithMeInner() {
     }, []);
 
     return (
-        <div className="container py-4" style={{ maxWidth: 900 }}>
-            <div className="d-flex align-items-center gap-3 mb-4">
-                <a href="/" className="btn btn-outline-secondary btn-sm">← My Notes</a>
-                <h4 className="fw-bold mb-0">🔗 Shared with me</h4>
+        <div style={{ minHeight: '100vh', background: 'var(--bg)', fontFamily: 'var(--font-base)' }}>
+            {/* Header bar */}
+            <div style={{
+                background: 'var(--surface)',
+                borderBottom: '1px solid var(--border)',
+                padding: '14px 24px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16,
+                position: 'sticky',
+                top: 0,
+                zIndex: 10,
+                boxShadow: 'var(--shadow-sm)',
+            }}>
+                <Link
+                    to="/"
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        color: 'var(--text-muted)',
+                        textDecoration: 'none',
+                        fontSize: '0.875rem',
+                        fontWeight: 500,
+                        transition: 'var(--transition)',
+                    }}
+                    id="back-to-notes-link"
+                >
+                    ← My Notes
+                </Link>
+                <div style={{ width: 1, height: 18, background: 'var(--border)' }} />
+                <h1 style={{ fontSize: '1rem', fontWeight: 700, margin: 0, color: 'var(--text)' }}>
+                    🔗 Shared with me
+                </h1>
             </div>
 
-            {loading && <div className="text-center py-5"><div className="spinner-border text-primary"/></div>}
+            <div style={{ maxWidth: 900, margin: '0 auto', padding: '28px 20px' }}>
 
-            {!loading && shares.length === 0 && (
-                <div className="text-center py-5 text-muted">
-                    <div style={{ fontSize: 48, marginBottom: 12 }}>🔗</div>
-                    <h5 className="fw-semibold">No shared notes</h5>
-                    <p className="small">When someone shares a note with you, it will appear here.</p>
-                </div>
-            )}
-
-            {/* Each shared note row — shows: note, who shared, when, permission */}
-            {shares.map(s => (
-                <div key={s.share_id} className="card mb-3 shadow-sm"
-                    style={{ cursor: 'pointer', border: '1px solid #e5e7eb', borderRadius: 10 }}
-                    onClick={() => setActiveShare(s)}>
-                    <div className="card-body py-3 px-4">
-                        <div className="d-flex align-items-start justify-content-between gap-3">
-                            <div className="flex-grow-1 overflow-hidden">
-                                <h6 className="fw-bold mb-1 text-truncate">
-                                    {s.note.title || <span className="text-muted fst-italic">Untitled</span>}
-                                </h6>
-                                {s.note.content && (
-                                    <p className="text-muted small mb-2 text-truncate" style={{ maxWidth: 500 }}>
-                                        {s.note.content.slice(0, 120)}
-                                    </p>
-                                )}
-                                {/* Labels */}
-                                {s.note.labels?.length > 0 && (
-                                    <div className="d-flex flex-wrap gap-1 mb-2">
-                                        {s.note.labels.map(l => (
-                                            <span key={l.id} className="badge rounded-pill"
-                                                style={{ background: '#e0e7ff', color: '#3730a3', fontSize: '0.7rem' }}>
-                                                {l.name}
-                                            </span>
-                                        ))}
-                                    </div>
-                                )}
-                                {/* Share metadata (requirement: show who, when, permission) */}
-                                <div className="d-flex align-items-center gap-3" style={{ fontSize: '0.75rem' }}>
-                                    <span className="text-muted">
-                                        👤 Shared by <strong>{s.shared_by.display_name}</strong> ({s.shared_by.email})
-                                    </span>
-                                    <span className="text-muted">📅 {fmt(s.shared_at)}</span>
-                                    <span className={`badge ${s.permission === 'edit' ? 'bg-success' : 'bg-secondary'}`}
-                                        style={{ fontSize: '0.7rem' }}>
-                                        {s.permission === 'edit' ? '✏️ Can edit' : '👁 Read only'}
-                                    </span>
-                                </div>
-                            </div>
-                            {s.note.images?.[0] && (
-                                <img src={s.note.images[0]} alt="" style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }}/>
-                            )}
-                        </div>
+                {/* Loading */}
+                {loading && (
+                    <div style={{ textAlign: 'center', padding: '60px 0' }}>
+                        <div className="spinner-border text-primary" />
                     </div>
-                </div>
-            ))}
+                )}
+
+                {/* Empty state */}
+                {!loading && shares.length === 0 && (
+                    <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
+                        <div style={{ fontSize: 60, marginBottom: 16 }}>🔗</div>
+                        <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: 8, color: 'var(--text)' }}>
+                            No shared notes
+                        </h2>
+                        <p style={{ fontSize: '0.9rem' }}>
+                            When someone shares a note with you, it will appear here.
+                        </p>
+                    </div>
+                )}
+
+                {/* Shared note cards — shows: note, who shared, when, permission */}
+                {shares.map(s => (
+                    <div
+                        key={s.share_id}
+                        onClick={() => setActiveShare(s)}
+                        style={{
+                            background: 'var(--surface)',
+                            border: '1.5px solid var(--border)',
+                            borderRadius: 'var(--radius-md)',
+                            padding: '16px 20px',
+                            marginBottom: 12,
+                            cursor: 'pointer',
+                            transition: 'var(--transition)',
+                            boxShadow: 'var(--shadow-sm)',
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            gap: 16,
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; e.currentTarget.style.transform = ''; }}
+                        id={`shared-note-${s.share_id}`}
+                    >
+                        <div style={{ flexGrow: 1, overflow: 'hidden' }}>
+                            {/* Note title */}
+                            <h3 style={{ fontSize: '0.98rem', fontWeight: 700, marginBottom: 4, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {s.note.title || <span style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>Untitled</span>}
+                            </h3>
+
+                            {/* Content preview */}
+                            {s.note.content && (
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 500 }}>
+                                    {s.note.content.slice(0, 120)}
+                                </p>
+                            )}
+
+                            {/* Labels */}
+                            {s.note.labels?.length > 0 && (
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
+                                    {s.note.labels.map(l => (
+                                        <span key={l.id} className="badge"
+                                            style={{ background: '#ede9fe', color: '#6d28d9', fontSize: '0.68rem' }}>
+                                            {l.name}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Share metadata: who shared, when, permission */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                                    👤 Shared by <strong style={{ color: 'var(--text)' }}>{s.shared_by.display_name}</strong>
+                                    <span style={{ opacity: 0.6 }}> ({s.shared_by.email})</span>
+                                </span>
+                                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                                    📅 {fmt(s.shared_at)}
+                                </span>
+                                <span
+                                    className="badge"
+                                    style={{
+                                        background: s.permission === 'edit' ? '#d1fae5' : 'var(--surface-2)',
+                                        color: s.permission === 'edit' ? '#065f46' : 'var(--text-muted)',
+                                        fontSize: '0.72rem',
+                                    }}
+                                >
+                                    {s.permission === 'edit' ? '✏️ Can edit' : '👁 Read only'}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Thumbnail */}
+                        {s.note.images?.[0] && (
+                            <img src={s.note.images[0]} alt=""
+                                style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 'var(--radius-sm)', flexShrink: 0 }} />
+                        )}
+                    </div>
+                ))}
+            </div>
 
             {/* Open shared note in editor */}
             {activeShare && (

@@ -14,549 +14,312 @@ import OfflineBanner from '../components/OfflineBanner';
 import ShareManager from '../components/ShareManager';
 
 function HomeInner() {
-
-    // Authentication context
     const { user, logout } = useAuth();
+    const { notes, loading, viewMode, toggleView, addNote } = useNotes();
 
-    // Notes context
-    const {
-        notes,
-        loading,
-        viewMode,
-        toggleView,
-        addNote
-    } = useNotes();
-
-    // Local states
-    const [activeNote, setActiveNote] = useState(null);
-    const [shareNote, setShareNote] = useState(null);
+    const [activeNote,  setActiveNote]  = useState(null);
+    const [shareNote,   setShareNote]   = useState(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    // Detect mobile screen
-    const [isMobile, setIsMobile] = useState(
-        () => window.innerWidth < 768
-    );
-
-    // Store dynamic header height
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
     const [headerHeight, setHeaderHeight] = useState(0);
-
-    // Reference for measuring header height
     const headerRef = useRef(null);
 
-    // Measure header height dynamically
-    // This includes navbar + mobile search bar
     useEffect(() => {
-
-        const measureHeader = () => {
-            if (headerRef.current) {
-                setHeaderHeight(headerRef.current.offsetHeight);
-            }
-        };
-
-        measureHeader();
-
-        window.addEventListener('resize', measureHeader);
-
-        return () => {
-            window.removeEventListener('resize', measureHeader);
-        };
-
+        const measure = () => headerRef.current && setHeaderHeight(headerRef.current.offsetHeight);
+        measure();
+        window.addEventListener('resize', measure);
+        return () => window.removeEventListener('resize', measure);
     }, []);
 
-    // Detect screen resize for mobile mode
     useEffect(() => {
-
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-
+        const onResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
     }, []);
 
-    // Auto close sidebar when switching to desktop
-    useEffect(() => {
+    useEffect(() => { if (!isMobile) setSidebarOpen(false); }, [isMobile]);
 
-        if (!isMobile) {
-            setSidebarOpen(false);
-        }
+    const openNote  = useCallback(note => setActiveNote(note), []);
+    const handleNew = useCallback(async () => { const note = await addNote(); setActiveNote(note); }, [addNote]);
 
-    }, [isMobile]);
+    const pinnedNotes = notes.filter(n => n.is_pinned);
+    const otherNotes  = notes.filter(n => !n.is_pinned);
 
-    // Open note editor
-    const openNote = useCallback((note) => {
-        setActiveNote(note);
-    }, []);
-
-    // Create new note
-    const handleNew = useCallback(async () => {
-
-        const note = await addNote();
-
-        setActiveNote(note);
-
-    }, [addNote]);
-
-    // Separate pinned notes
-    const pinnedNotes = notes.filter(note => note.is_pinned);
-
-    // Separate normal notes
-    const otherNotes = notes.filter(note => !note.is_pinned);
-
-    // Grid layout style
     const gridStyle = {
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
         gap: 16,
     };
 
-    // Find latest active note
-    const currentNote = activeNote
-        ? notes.find(n => n.id === activeNote.id) ?? activeNote
-        : null;
+    const currentNote = activeNote ? notes.find(n => n.id === activeNote.id) ?? activeNote : null;
+
+    /* ── Section label style ── */
+    const sectionLabel = {
+        fontSize: '0.72rem',
+        fontWeight: 700,
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
+        color: 'var(--text-subtle)',
+        marginBottom: 10,
+    };
+
+    /* ── Active view toggle button style ── */
+    const viewBtn = (active) => ({
+        border: 'none',
+        borderRadius: 'var(--radius-sm)',
+        padding: '5px 10px',
+        cursor: 'pointer',
+        fontSize: '0.9rem',
+        transition: 'var(--transition)',
+        background: active ? 'var(--primary)' : 'transparent',
+        color: active ? '#fff' : 'var(--text-muted)',
+        fontFamily: 'var(--font-base)',
+    });
 
     return (
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg)' }}>
 
-        <div
-            className="d-flex flex-column bg-body"
-            style={{ minHeight: '100vh' }}
-        >
-
-            {/* Offline notification */}
+            {/* Offline banner */}
             <OfflineBanner />
 
-            {/* =======================================================
-                HEADER AREA
-                Navbar + mobile search bar
-            ======================================================== */}
-
+            {/* ── HEADER ── */}
             <div ref={headerRef}>
-
-                {/* Navbar */}
                 <nav
-                    className="navbar bg-body border-bottom sticky-top px-3 py-2"
-                    style={{ zIndex: 1040 }}
+                    className="navbar bg-body border-bottom"
+                    style={{ zIndex: 1040, padding: '10px 16px' }}
                 >
-
                     {/* Mobile sidebar toggle */}
                     <button
                         className="btn btn-sm btn-outline-secondary me-2 d-md-none"
                         onClick={() => setSidebarOpen(v => !v)}
+                        style={{ borderRadius: 'var(--radius-sm)' }}
+                        id="sidebar-toggle"
                     >
                         ☰
                     </button>
 
-                    {/* App logo / title */}
-                    <span
-                        className="navbar-brand fw-bold mb-0"
-                        style={{ color: '#4f46e5' }}npm run build
-                    >
+                    {/* Logo */}
+                    <span className="navbar-brand fw-bold mb-0" style={{ fontSize: '1.1rem' }}>
                         📝 NoteApp
                     </span>
 
-                    {/* Desktop search bar */}
-                    <div className="flex-grow-1 mx-3 d-none d-sm-block">
+                    {/* Desktop search */}
+                    <div className="flex-grow-1 mx-3 d-none d-sm-flex justify-content-center">
                         <SearchBar />
                     </div>
 
-                    {/* View mode buttons */}
-                    <div className="btn-group me-2">
-
-                        {/* Grid view */}
+                    {/* View toggle */}
+                    <div
+                        style={{
+                            display: 'flex',
+                            gap: 2,
+                            background: 'var(--surface-2)',
+                            borderRadius: 'var(--radius-sm)',
+                            padding: 3,
+                            marginRight: 8,
+                        }}
+                    >
                         <button
-                            className={`btn btn-sm ${
-                                viewMode === 'grid'
-                                    ? 'btn-primary'
-                                    : 'btn-outline-secondary'
-                            }`}
-                            onClick={() => {
-                                if (viewMode !== 'grid') {
-                                    toggleView();
-                                }
-                            }}
+                            style={viewBtn(viewMode === 'grid')}
+                            onClick={() => viewMode !== 'grid' && toggleView()}
                             title="Grid view"
-                        >
-                            ▦
-                        </button>
-
-                        {/* List view */}
+                            id="view-grid"
+                        >▦</button>
                         <button
-                            className={`btn btn-sm ${
-                                viewMode === 'list'
-                                    ? 'btn-primary'
-                                    : 'btn-outline-secondary'
-                            }`}
-                            onClick={() => {
-                                if (viewMode !== 'list') {
-                                    toggleView();
-                                }
-                            }}
+                            style={viewBtn(viewMode === 'list')}
+                            onClick={() => viewMode !== 'list' && toggleView()}
                             title="List view"
-                        >
-                            ☰
-                        </button>
-
+                            id="view-list"
+                        >☰</button>
                     </div>
 
-                    {/* Shared notes page */}
+                    {/* Shared notes link */}
                     <Link
                         to="/shared-with-me"
                         className="btn btn-sm btn-outline-secondary me-2"
                         title="Notes shared with me"
+                        style={{ borderRadius: 'var(--radius-sm)' }}
+                        id="shared-with-me-link"
                     >
                         🔗
                     </Link>
 
                     {/* User dropdown */}
                     <div className="dropdown">
-
                         <button
                             className="avatar-btn dropdown-toggle"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
+                            id="user-menu-btn"
                         >
-
-                            {/* User avatar */}
                             {user?.avatar_url ? (
-
-                                <img
-                                    src={user.avatar_url}
-                                    alt="avatar"
-                                />
-
+                                <img src={user.avatar_url} alt="avatar" />
                             ) : (
-
-                                <span
-                                    style={{
-                                        fontSize: '0.85rem',
-                                        fontWeight: 'bold',
-                                        color: '#4b5563',
-                                        lineHeight: 1
-                                    }}
-                                >
-                                    {user?.display_name
-                                        ?.charAt(0)
-                                        .toUpperCase()}
+                                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fff', lineHeight: 1 }}>
+                                    {user?.display_name?.charAt(0).toUpperCase()}
                                 </span>
-
                             )}
-
                         </button>
 
-                        {/* Dropdown menu */}
-                        <ul className="dropdown-menu dropdown-menu-end shadow-sm">
-
+                        <ul className="dropdown-menu dropdown-menu-end">
                             <li>
-                                <span className="dropdown-item-text small text-muted">
+                                <span className="dropdown-item-text small" style={{ color: 'var(--text-subtle)', padding: '6px 12px', display: 'block' }}>
                                     {user?.email}
                                 </span>
                             </li>
-
+                            <li><hr className="dropdown-divider" /></li>
                             <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-
-                            <li>
-                                <Link
-                                    className="dropdown-item small"
-                                    to="/preferences"
-                                >
+                                <Link className="dropdown-item small" to="/preferences" id="preferences-link">
                                     ⚙️ Preferences
                                 </Link>
                             </li>
-
                             <li>
-                                <button
-                                    className="dropdown-item small text-danger"
-                                    onClick={logout}
-                                >
+                                <button className="dropdown-item small text-danger" onClick={logout} id="logout-btn">
                                     Sign out
                                 </button>
                             </li>
-
                         </ul>
-
                     </div>
-
                 </nav>
 
                 {/* Mobile search bar */}
                 <div className="d-sm-none px-3 py-2 bg-white border-bottom">
                     <SearchBar />
                 </div>
-
             </div>
 
-            {/* =======================================================
-                MAIN CONTENT AREA
-            ======================================================== */}
+            {/* ── BODY ── */}
+            <div style={{ display: 'flex', flexGrow: 1, overflow: 'hidden', position: 'relative' }}>
 
-            <div
-                className="d-flex flex-grow-1"
-                style={{
-                    overflow: 'hidden',
-                    position: 'relative'
-                }}
-            >
-
-                {/* ===================================================
-                    MOBILE BACKDROP
-                ==================================================== */}
-
+                {/* Mobile backdrop */}
                 {isMobile && sidebarOpen && (
-
                     <div
                         style={{
-                            position: 'fixed',
-                            top: headerHeight,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            background: 'rgba(0,0,0,0.4)',
-                            zIndex: 1050,
+                            position: 'fixed', top: headerHeight, left: 0, right: 0, bottom: 0,
+                            background: 'rgba(0,0,0,0.45)', zIndex: 1050,
                         }}
                         onClick={() => setSidebarOpen(false)}
                     />
-
                 )}
 
-                {/* ===================================================
-                    SIDEBAR
-                ==================================================== */}
-
+                {/* ── SIDEBAR ── */}
                 {isMobile ? (
-
-                    // Mobile sidebar
                     <aside
                         className="bg-body border-end p-3 overflow-auto"
                         style={{
-                            position: 'fixed',
-                            top: headerHeight,
-                            left: 0,
-                            width: 240,
-                            bottom: 0,
+                            position: 'fixed', top: headerHeight, left: 0, width: 240, bottom: 0,
                             zIndex: 1051,
-                            transform: sidebarOpen
-                                ? 'translateX(0)'
-                                : 'translateX(-100%)',
-                            transition: 'transform 0.25s ease',
+                            transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+                            transition: 'transform 0.25s cubic-bezier(0.4,0,0.2,1)',
                         }}
                     >
-
-                        <LabelManager
-                            onSelect={() => setSidebarOpen(false)}
-                        />
-
+                        <LabelManager onSelect={() => setSidebarOpen(false)} />
                     </aside>
-
                 ) : (
-
-                    // Desktop sidebar
                     <aside
                         className="bg-body border-end p-3 overflow-auto"
-                        style={{
-                            width: 220,
-                            flexShrink: 0,
-                            position: 'sticky',
-                            top: 56,
-                            height: 'calc(100vh - 56px)'
-                        }}
+                        style={{ width: 220, flexShrink: 0, position: 'sticky', top: 56, height: 'calc(100vh - 56px)' }}
                     >
-
                         <LabelManager />
-
                     </aside>
-
                 )}
 
-                {/* ===================================================
-                    MAIN PAGE CONTENT
-                ==================================================== */}
+                {/* ── MAIN CONTENT ── */}
+                <main style={{ flexGrow: 1, padding: '24px 28px', overflowY: 'auto' }}>
 
-                <main className="flex-grow-1 p-3 p-md-4 overflow-auto">
-
-                    {/* Create new note button */}
+                    {/* New note button */}
                     <button
-                        className="btn btn-primary mb-4 d-flex align-items-center gap-2"
+                        className="btn btn-primary"
                         onClick={handleNew}
-                        style={{ borderRadius: 24 }}
+                        id="new-note-btn"
+                        style={{
+                            borderRadius: 'var(--radius-xl)',
+                            padding: '10px 22px',
+                            marginBottom: 24,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            fontWeight: 600,
+                            fontSize: '0.9rem',
+                        }}
                     >
-                        <span style={{ fontSize: '1.1rem' }}>+</span>
-                        New note
+                        <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>+</span> New note
                     </button>
 
-                    {/* Loading state */}
+                    {/* Loading */}
                     {loading ? (
-
-                        <div className="text-center py-5">
+                        <div style={{ textAlign: 'center', padding: '60px 0' }}>
                             <div className="spinner-border text-primary" />
                         </div>
 
                     ) : notes.length === 0 ? (
-
-                        // Empty state
-                        <div className="text-center py-5 text-muted">
-
-                            <div
-                                style={{
-                                    fontSize: 56,
-                                    marginBottom: 16
-                                }}
-                            >
-                                📝
-                            </div>
-
-                            <h5 className="fw-semibold">
-                                No notes yet
-                            </h5>
-
-                            <p className="small">
-                                Create your first note to get started.
-                            </p>
-
+                        /* Empty state */
+                        <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
+                            <div style={{ fontSize: 64, marginBottom: 16 }}>📝</div>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: 8, color: 'var(--text)' }}>No notes yet</h2>
+                            <p style={{ fontSize: '0.9rem', marginBottom: 20 }}>Create your first note to get started.</p>
                             <button
                                 className="btn btn-primary btn-sm"
                                 onClick={handleNew}
+                                style={{ borderRadius: 'var(--radius-xl)', padding: '8px 20px' }}
                             >
                                 + Create note
                             </button>
-
                         </div>
 
                     ) : (
-
                         <>
                             {/* Pinned notes */}
                             {pinnedNotes.length > 0 && (
-
-                                <section className="mb-4">
-
-                                    <p
-                                        className="text-muted small fw-semibold mb-2 text-uppercase"
-                                        style={{
-                                            letterSpacing: '0.05em',
-                                            fontSize: '0.72rem'
-                                        }}
-                                    >
-                                        📌 Pinned
-                                    </p>
-
+                                <section style={{ marginBottom: 28 }}>
+                                    <p style={sectionLabel}>📌 Pinned</p>
                                     {viewMode === 'grid' ? (
-
                                         <div style={gridStyle}>
-                                            {pinnedNotes.map(note => (
-                                                <GridCard
-                                                    key={note.id}
-                                                    note={note}
-                                                    onOpen={openNote}
-                                                />
-                                            ))}
+                                            {pinnedNotes.map(note => <GridCard key={note.id} note={note} onOpen={openNote} />)}
                                         </div>
-
                                     ) : (
-
                                         <div>
-                                            {pinnedNotes.map(note => (
-                                                <ListRow
-                                                    key={note.id}
-                                                    note={note}
-                                                    onOpen={openNote}
-                                                />
-                                            ))}
+                                            {pinnedNotes.map(note => <ListRow key={note.id} note={note} onOpen={openNote} />)}
                                         </div>
-
                                     )}
-
                                 </section>
-
                             )}
 
                             {/* Other notes */}
                             {otherNotes.length > 0 && (
-
                                 <section>
-
-                                    {pinnedNotes.length > 0 && (
-                                        <p
-                                            className="text-muted small fw-semibold mb-2 text-uppercase"
-                                            style={{
-                                                letterSpacing: '0.05em',
-                                                fontSize: '0.72rem'
-                                            }}
-                                        >
-                                            Other notes
-                                        </p>
-                                    )}
-
+                                    {pinnedNotes.length > 0 && <p style={sectionLabel}>Other notes</p>}
                                     {viewMode === 'grid' ? (
-
                                         <div style={gridStyle}>
-                                            {otherNotes.map(note => (
-                                                <GridCard
-                                                    key={note.id}
-                                                    note={note}
-                                                    onOpen={openNote}
-                                                />
-                                            ))}
+                                            {otherNotes.map(note => <GridCard key={note.id} note={note} onOpen={openNote} />)}
                                         </div>
-
                                     ) : (
-
                                         <div>
-                                            {otherNotes.map(note => (
-                                                <ListRow
-                                                    key={note.id}
-                                                    note={note}
-                                                    onOpen={openNote}
-                                                />
-                                            ))}
+                                            {otherNotes.map(note => <ListRow key={note.id} note={note} onOpen={openNote} />)}
                                         </div>
-
                                     )}
-
                                 </section>
-
                             )}
                         </>
-
                     )}
-
                 </main>
-
             </div>
 
             {/* Note editor modal */}
             {currentNote && (
-
-                <NoteEditor
-                    note={currentNote}
-                    onClose={() => setActiveNote(null)}
-                    onShare={() => setShareNote(currentNote)}
-                />
-
+                <NoteEditor note={currentNote} onClose={() => setActiveNote(null)} onShare={() => setShareNote(currentNote)} />
             )}
 
             {/* Share modal */}
             {shareNote && (
-
-                <ShareManager
-                    note={shareNote}
-                    onClose={() => setShareNote(null)}
-                />
-
+                <ShareManager note={shareNote} onClose={() => setShareNote(null)} />
             )}
-
         </div>
-
     );
 }
 
 export default function HomePage() {
-
     return (
         <NoteProvider>
             <HomeInner />

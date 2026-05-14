@@ -1,200 +1,367 @@
 /* ═══════════════════════════════════════════════════
-   DARK MODE + RESPONSIVE MOBILE FIX
+   NOTEAPP — PREMIUM UI DESIGN SYSTEM
    ═══════════════════════════════════════════════════ */
 
 /* =================================================
-   1. DARK MODE
+   1. CSS VARIABLES (DESIGN TOKENS)
 ================================================= */
 
-[data-bs-theme="dark"] body,
-[data-bs-theme="dark"] .bg-body {
-    background-color: #202124 !important;
+:root {
+    --font-base: 'Inter', system-ui, -apple-system, sans-serif;
+
+    /* Brand colors */
+    --primary:        #4f46e5;
+    --primary-hover:  #4338ca;
+    --primary-light:  #eef2ff;
+    --primary-dark:   #3730a3;
+
+    /* Neutrals */
+    --bg:             #f8f7ff;
+    --surface:        #ffffff;
+    --surface-2:      #f3f4f6;
+    --border:         #e5e7eb;
+    --border-focus:   #a5b4fc;
+
+    /* Text */
+    --text:           #111827;
+    --text-muted:     #6b7280;
+    --text-subtle:    #9ca3af;
+
+    /* Feedback */
+    --success:        #10b981;
+    --warning:        #f59e0b;
+    --danger:         #ef4444;
+
+    /* Shadows */
+    --shadow-sm:      0 1px 3px rgba(79,70,229,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md:      0 4px 16px rgba(79,70,229,0.12), 0 2px 6px rgba(0,0,0,0.06);
+    --shadow-lg:      0 12px 40px rgba(79,70,229,0.18), 0 4px 12px rgba(0,0,0,0.08);
+
+    /* Radius */
+    --radius-sm:      8px;
+    --radius-md:      12px;
+    --radius-lg:      16px;
+    --radius-xl:      24px;
+
+    /* Transitions */
+    --transition:     all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-[data-bs-theme="dark"] .navbar.bg-body {
-    background-color: #292b2e !important;
-    border-bottom-color: #3c4043 !important;
-}
-
-[data-bs-theme="dark"] aside.bg-body {
-    background-color: #292b2e !important;
-    border-right-color: #3c4043 !important;
+/* Dark mode tokens */
+[data-bs-theme="dark"] {
+    --bg:             #0f0f14;
+    --surface:        #1a1a2e;
+    --surface-2:      #252538;
+    --border:         #2e2e4a;
+    --border-focus:   #6366f1;
+    --text:           #f0f0ff;
+    --text-muted:     #9ca3af;
+    --text-subtle:    #6b7280;
+    --primary-light:  #1e1b4b;
+    --shadow-sm:      0 1px 3px rgba(0,0,0,0.4);
+    --shadow-md:      0 4px 16px rgba(0,0,0,0.5);
+    --shadow-lg:      0 12px 40px rgba(0,0,0,0.6);
 }
 
 /* =================================================
-   2. NOTE GRID CARDS
+   2. BASE & TYPOGRAPHY
 ================================================= */
 
-[data-bs-theme="dark"] .note-card-grid {
-    background-color: #3c4043 !important;
-    color: #e8eaed !important;
-    border-color: #5f6368 !important;
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+    height: 100%;
+    overflow-x: hidden;
 }
 
-[data-bs-theme="dark"] .note-card-grid .card-title,
-[data-bs-theme="dark"] .note-card-grid .card-text,
-[data-bs-theme="dark"] .note-card-grid .fw-semibold {
-    color: #e8eaed !important;
+body {
+    font-family: var(--font-base);
+    background-color: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-[data-bs-theme="dark"] .note-card-grid .text-muted {
-    color: #9aa0a6 !important;
-}
+img { max-width: 100%; height: auto; }
 
-[data-bs-theme="dark"] .note-card-grid .btn-link.text-secondary {
-    color: #9aa0a6 !important;
+/* Override Bootstrap with our font */
+.modal-content, .card, .dropdown-menu,
+.form-control, .btn, .badge, input, textarea, select {
+    font-family: var(--font-base) !important;
 }
 
 /* =================================================
-   3. NOTE LIST
+   3. ANIMATIONS / KEYFRAMES
 ================================================= */
 
-[data-bs-theme="dark"] .note-card-list {
-    background-color: #3c4043 !important;
-    color: #e8eaed !important;
-    border-color: #5f6368 !important;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-16px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
 }
 
-[data-bs-theme="dark"] .note-card-list:hover {
-    background-color: #444749 !important;
+.fade-in      { animation: fadeIn 0.3s ease both; }
+.slide-in     { animation: slideInLeft 0.25s ease both; }
+.scale-in     { animation: scaleIn 0.2s ease both; }
+
+/* =================================================
+   4. NAVBAR
+================================================= */
+
+.navbar.bg-body {
+    background-color: var(--surface) !important;
+    border-bottom: 1px solid var(--border) !important;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(8px);
+    transition: var(--transition);
 }
 
-[data-bs-theme="dark"] .note-card-list .text-muted {
-    color: #9aa0a6 !important;
-}
-
-[data-bs-theme="dark"] .note-card-list .fw-semibold {
-    color: #e8eaed !important;
+.navbar-brand {
+    font-weight: 700 !important;
+    font-size: 1.15rem !important;
+    letter-spacing: -0.02em;
+    color: var(--primary) !important;
 }
 
 /* =================================================
-   4. DROPDOWN
+   5. SIDEBAR
 ================================================= */
 
-[data-bs-theme="dark"] .dropdown-menu {
-    background-color: #2d2f31 !important;
-    border-color: #3c4043 !important;
-}
-
-[data-bs-theme="dark"] .dropdown-item {
-    color: #e8eaed !important;
-}
-
-[data-bs-theme="dark"] .dropdown-item:hover {
-    background-color: #3c4043 !important;
-}
-
-[data-bs-theme="dark"] .dropdown-divider {
-    border-color: #3c4043 !important;
+aside.bg-body {
+    background-color: var(--surface) !important;
+    border-right: 1px solid var(--border) !important;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* =================================================
-   5. SIDEBAR LABELS
+   6. BUTTONS — Override Bootstrap
 ================================================= */
 
-[data-bs-theme="dark"] .btn-link.text-dark {
-    color: #8ab4f8 !important;
+.btn {
+    font-family: var(--font-base) !important;
+    font-weight: 500;
+    transition: var(--transition);
+    border-radius: var(--radius-sm) !important;
 }
+.btn-primary {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 2px 8px rgba(79,70,229,0.3) !important;
+}
+.btn-primary:hover {
+    background: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+    box-shadow: 0 4px 14px rgba(79,70,229,0.4) !important;
+    transform: translateY(-1px);
+}
+.btn-primary:active { transform: translateY(0) !important; }
 
-[data-bs-theme="dark"] .btn-link.text-dark:hover {
-    color: #aecbfa !important;
+.btn-outline-secondary {
+    border-color: var(--border) !important;
+    color: var(--text-muted) !important;
+    background: transparent !important;
+}
+.btn-outline-secondary:hover {
+    background: var(--surface-2) !important;
+    border-color: var(--border-focus) !important;
+    color: var(--primary) !important;
 }
 
 /* =================================================
-   6. INPUTS + SEARCH BAR
+   7. FORM CONTROLS
 ================================================= */
 
-[data-bs-theme="dark"] .form-control {
-    background-color: #3c4043 !important;
-    border-color: #5f6368 !important;
-    color: #e8eaed !important;
+.form-control {
+    font-family: var(--font-base) !important;
+    background-color: var(--surface) !important;
+    border: 1.5px solid var(--border) !important;
+    color: var(--text) !important;
+    border-radius: var(--radius-sm) !important;
+    transition: var(--transition) !important;
+    padding: 0.5rem 0.85rem !important;
 }
+.form-control:focus {
+    border-color: var(--border-focus) !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15) !important;
+    outline: none !important;
+}
+.form-control::placeholder { color: var(--text-subtle) !important; }
 
-[data-bs-theme="dark"] .form-control::placeholder {
-    color: #9aa0a6 !important;
+/* =================================================
+   8. NOTE CARDS — GRID
+================================================= */
+
+.note-card-grid {
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+    border-radius: var(--radius-md) !important;
+    border: 1.5px solid var(--border) !important;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.25s ease, transform 0.2s ease !important;
+    animation: fadeIn 0.3s ease both;
+    cursor: pointer;
+}
+.note-card-grid:hover {
+    box-shadow: var(--shadow-md) !important;
+    transform: translateY(-3px) !important;
+}
+.note-card-grid .card-title  { color: var(--text) !important; font-weight: 600; }
+.note-card-grid .card-text   { color: var(--text-muted) !important; }
+.note-card-grid .fw-semibold { color: var(--text) !important; }
+.note-card-grid .text-muted  { color: var(--text-subtle) !important; }
+
+/* =================================================
+   9. NOTE CARDS — LIST
+================================================= */
+
+.note-card-list {
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition) !important;
+    animation: fadeIn 0.3s ease both;
+    cursor: pointer;
+}
+.note-card-list:hover {
+    background-color: var(--primary-light) !important;
+    border-color: var(--border-focus) !important;
+    box-shadow: var(--shadow-md) !important;
+    transform: translateX(3px);
+}
+.note-card-list .text-muted  { color: var(--text-subtle) !important; }
+.note-card-list .fw-semibold { color: var(--text) !important; }
+
+/* =================================================
+   10. DROPDOWN
+================================================= */
+
+.dropdown-menu {
+    background-color: var(--surface) !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-lg) !important;
+    padding: 6px !important;
+    animation: scaleIn 0.15s ease both;
+    font-family: var(--font-base) !important;
+}
+.dropdown-item {
+    color: var(--text) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 7px 12px !important;
+    font-size: 0.875rem;
+    transition: var(--transition);
+}
+.dropdown-item:hover {
+    background-color: var(--primary-light) !important;
+    color: var(--primary) !important;
+}
+.dropdown-item.text-danger:hover {
+    background-color: #fef2f2 !important;
+    color: var(--danger) !important;
+}
+[data-bs-theme="dark"] .dropdown-item.text-danger:hover {
+    background-color: rgba(239,68,68,0.15) !important;
+}
+.dropdown-divider { border-color: var(--border) !important; margin: 4px 6px !important; }
+
+/* =================================================
+   11. MODAL
+================================================= */
+
+.modal-content {
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+    border: none !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-lg) !important;
+    animation: scaleIn 0.2s ease both;
+}
+.modal-content .form-control {
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+}
+.modal-content hr { border-color: var(--border) !important; }
+.modal-header { border-bottom-color: var(--border) !important; }
+.modal-footer { border-top-color: var(--border) !important; }
+
+/* =================================================
+   12. CARDS (Settings / Preferences)
+================================================= */
+
+.card:not(.note-card-grid) {
+    background-color: var(--surface) !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--radius-md) !important;
+    color: var(--text) !important;
+    box-shadow: var(--shadow-sm);
 }
 
 /* =================================================
-   7. MODAL
-================================================= */
-
-[data-bs-theme="dark"] .modal-content {
-    background-color: #292b2e !important;
-    color: #e8eaed !important;
-    border-color: #3c4043 !important;
-}
-
-[data-bs-theme="dark"] .modal-content .form-control {
-    background-color: #292b2e !important;
-    color: #e8eaed !important;
-}
-
-[data-bs-theme="dark"] .modal-content hr {
-    border-color: #3c4043 !important;
-}
-
-/* =================================================
-   8. SETTINGS CARD
-================================================= */
-
-[data-bs-theme="dark"] .card:not(.note-card-grid) {
-    background-color: #292b2e !important;
-    border-color: #3c4043 !important;
-    color: #e8eaed !important;
-}
-
-/* =================================================
-   9. AVATAR BUTTON
+   13. AVATAR BUTTON
 ================================================= */
 
 .avatar-btn {
-    width: 32px !important;
-    height: 32px !important;
+    width: 36px !important;
+    height: 36px !important;
     padding: 0 !important;
     border-radius: 50% !important;
     overflow: hidden !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border: 2px solid #e5e7eb !important;
-    background: #f3f4f6 !important;
+    border: 2px solid var(--border-focus) !important;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
     flex-shrink: 0;
+    transition: var(--transition);
 }
-
-.avatar-btn::after {
-    display: none !important;
+.avatar-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.25) !important;
 }
-
+.avatar-btn::after { display: none !important; }
 .avatar-btn img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    display: block !important;
+    width: 100% !important; height: 100% !important;
+    object-fit: cover !important; display: block !important;
     border-radius: 50%;
 }
 
 /* =================================================
-   10. GLOBAL RESPONSIVE
+   14. SIDEBAR LABEL BUTTONS
 ================================================= */
 
-html,
-body,
-#root {
-    height: 100%;
-    overflow-x: hidden;
+.btn-link.text-dark {
+    color: var(--text-muted) !important;
+    text-decoration: none !important;
+    transition: var(--transition);
 }
+.btn-link.text-dark:hover { color: var(--primary) !important; }
 
-body {
-    overflow-x: hidden;
+[data-bs-theme="dark"] .btn-link.text-dark {
+    color: var(--text-muted) !important;
 }
-
-img {
-    max-width: 100%;
-    height: auto;
+[data-bs-theme="dark"] .btn-link.text-dark:hover {
+    color: #a5b4fc !important;
 }
 
 /* =================================================
-   11. NOTES GRID
+   15. NOTES GRID LAYOUT
 ================================================= */
 
 .notes-grid {
@@ -204,99 +371,198 @@ img {
 }
 
 /* =================================================
-   12. TABLET
+   16. CUSTOM SCROLLBAR
 ================================================= */
 
-@media (max-width: 992px) {
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--border-focus); }
 
-    .notes-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
+/* =================================================
+   17. AUTH PAGES
+================================================= */
 
-    aside {
-        width: 240px !important;
-    }
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
+    padding: 24px 16px;
+}
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 40px 36px;
+    animation: scaleIn 0.25s ease both;
+}
+.auth-logo {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -0.04em;
+    margin-bottom: 4px;
+}
+.auth-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 28px;
+}
+.auth-divider {
+    text-align: center;
+    color: var(--text-subtle);
+    font-size: 0.8rem;
+    margin: 20px 0;
+    position: relative;
+}
+.auth-divider::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 50%;
+    height: 1px;
+    background: var(--border);
+}
+.auth-divider span {
+    position: relative;
+    background: var(--surface);
+    padding: 0 10px;
 }
 
 /* =================================================
-   13. MOBILE
+   18. MOBILE SEARCH BAR — dark mode fix
+================================================= */
+
+.d-sm-none.px-3.py-2.bg-white.border-bottom {
+    background-color: var(--surface) !important;
+    border-bottom-color: var(--border) !important;
+}
+
+/* =================================================
+   19. BADGE
+================================================= */
+
+.badge {
+    font-family: var(--font-base) !important;
+    font-weight: 500 !important;
+    border-radius: 99px !important;
+    letter-spacing: 0.01em;
+}
+
+/* =================================================
+   20. ALERT
+================================================= */
+
+.alert {
+    border-radius: var(--radius-md) !important;
+    border: none !important;
+    font-size: 0.875rem;
+}
+
+/* =================================================
+   21. SPINNER override
+================================================= */
+
+.spinner-border.text-primary { color: var(--primary) !important; }
+
+/* =================================================
+   22. RESPONSIVE — TABLET
+================================================= */
+
+@media (max-width: 992px) {
+    .notes-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+    aside { width: 240px !important; }
+}
+
+/* =================================================
+   23. RESPONSIVE — MOBILE
 ================================================= */
 
 @media (max-width: 768px) {
-
     .navbar {
         position: sticky !important;
         top: 0 !important;
         z-index: 1040 !important;
-
         padding-left: 12px !important;
         padding-right: 12px !important;
     }
-
-    /* Mobile search bar */
     .d-sm-none.px-3.py-2.bg-white.border-bottom {
         position: sticky !important;
         top: 56px !important;
         z-index: 1035 !important;
-        background: white !important;
     }
-
-    /* Sidebar mobile */
     aside {
         position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-
+        top: 0 !important; left: 0 !important;
         width: 260px !important;
         max-width: 80% !important;
-
-        height: 100% !important;
-        max-height: 100% !important;
-
+        height: 100% !important; max-height: 100% !important;
         overflow-y: auto !important;
-
         z-index: 1050 !important;
     }
-
-    main {
-        overflow-x: hidden !important;
-    }
-
-    .notes-grid {
-        grid-template-columns: 1fr !important;
-    }
-
-    .btn,
-    .dropdown-toggle {
-        white-space: nowrap;
-    }
-
-    .modal-dialog {
-        margin: 10px !important;
-    }
-
-    .form-control {
-        width: 100% !important;
-    }
+    main { overflow-x: hidden !important; }
+    .notes-grid { grid-template-columns: 1fr !important; }
+    .btn, .dropdown-toggle { white-space: nowrap; }
+    .modal-dialog { margin: 10px !important; }
+    .form-control { width: 100% !important; }
+    .auth-card { padding: 28px 20px !important; }
 }
 
 /* =================================================
-   14. SMALL PHONE
+   24. RESPONSIVE — SMALL PHONE
 ================================================= */
 
 @media (max-width: 480px) {
-
-    .navbar-brand {
-        font-size: 1rem !important;
-    }
-
-    .avatar-btn {
-        width: 28px !important;
-        height: 28px !important;
-    }
-
-    .note-card-grid,
-    .note-card-list {
-        padding: 12px !important;
-    }
+    .navbar-brand { font-size: 1rem !important; }
+    .avatar-btn { width: 30px !important; height: 30px !important; }
+    .note-card-grid, .note-card-list { padding: 12px !important; }
 }
+
+/* =================================================
+   25. DARK MODE — Body & bg-body overrides
+================================================= */
+
+[data-bs-theme="dark"] body,
+[data-bs-theme="dark"] .bg-body {
+    background-color: var(--bg) !important;
+}
+[data-bs-theme="dark"] .navbar.bg-body {
+    background-color: var(--surface) !important;
+    border-bottom-color: var(--border) !important;
+}
+[data-bs-theme="dark"] aside.bg-body {
+    background-color: var(--surface) !important;
+    border-right-color: var(--border) !important;
+}
+[data-bs-theme="dark"] .modal-content {
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+}
+[data-bs-theme="dark"] .modal-content .form-control {
+    background-color: var(--surface-2) !important;
+    color: var(--text) !important;
+}
+[data-bs-theme="dark"] .form-control {
+    background-color: var(--surface-2) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+[data-bs-theme="dark"] .form-control::placeholder {
+    color: var(--text-subtle) !important;
+}
+[data-bs-theme="dark"] .card:not(.note-card-grid) {
+    background-color: var(--surface) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+[data-bs-theme="dark"] .auth-page {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+}
+[data-bs-theme="dark"] .auth-card { background: var(--surface); }
+[data-bs-theme="dark"] .auth-divider span { background: var(--surface); }
