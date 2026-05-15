@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Share2, X } from 'lucide-react';
 import { getShares, shareNote, updateShare, revokeShare } from '../api/shareApi';
+import { useNotes } from '../context/NoteContext';
 export default function ShareManager({ note, onClose }) {
+    const { saveNote } = useNotes();
     const [shares, setShares] = useState([]);
     const [email, setEmail]   = useState('');
     const [perm, setPerm]     = useState('read');
@@ -17,6 +19,10 @@ export default function ShareManager({ note, onClose }) {
             const {data} = await shareNote(note.id, email, perm);
             setShares(p => { const existing=p.findIndex(s=>s.id===data.share.id); return existing>=0?p.map((s,i)=>i===existing?data.share:s):[...p,data.share]; });
             setMsg(data.message); setEmail('');
+            // Update the note's is_shared flag in real-time
+            if (!note.is_shared) {
+                saveNote(note.id, { is_shared: true }).catch(() => {});
+            }
         } catch(e) { setErr(e.response?.data?.errors?.email?.[0]||e.response?.data?.message||'Error'); }
         finally { setLoad(false); }
     };
@@ -28,7 +34,12 @@ export default function ShareManager({ note, onClose }) {
 
     const doRevoke = async shareId => {
         await revokeShare(note.id, shareId);
-        setShares(p=>p.filter(s=>s.id!==shareId));
+        const remaining = shares.filter(s=>s.id!==shareId);
+        setShares(remaining);
+        // If no shares remaining, update is_shared to false
+        if (remaining.length === 0) {
+            saveNote(note.id, { is_shared: false }).catch(() => {});
+        }
     };
 
     return (

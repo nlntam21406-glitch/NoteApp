@@ -207,7 +207,6 @@ aside.bg-body {
 ================================================= */
 
 .note-card-grid {
-    background-color: var(--surface) !important;
     color: var(--text) !important;
     border-radius: var(--radius-md) !important;
     border: 1.5px solid var(--border) !important;
@@ -230,7 +229,6 @@ aside.bg-body {
 ================================================= */
 
 .note-card-list {
-    background-color: var(--surface) !important;
     color: var(--text) !important;
     border: 1.5px solid var(--border) !important;
     border-radius: var(--radius-md) !important;

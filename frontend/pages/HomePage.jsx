@@ -24,7 +24,7 @@ function HomeInner() {
 
     const [activeNote,  setActiveNote]  = useState(null);
     const [shareNote,   setShareNote]   = useState(null);
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 768);
 
     const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
     const [headerHeight, setHeaderHeight] = useState(0);
@@ -38,12 +38,13 @@ function HomeInner() {
     }, []);
 
     useEffect(() => {
-        const onResize = () => setIsMobile(window.innerWidth < 768);
+        const onResize = () => {
+            const mobile = window.innerWidth < 768;
+            setIsMobile(mobile);
+        };
         window.addEventListener('resize', onResize);
         return () => window.removeEventListener('resize', onResize);
     }, []);
-
-    useEffect(() => { if (!isMobile) setSidebarOpen(false); }, [isMobile]);
 
     const openNote  = useCallback(note => setActiveNote(note), []);
     const handleNew = useCallback(async () => { const note = await addNote(); setActiveNote(note); }, [addNote]);
@@ -99,9 +100,9 @@ function HomeInner() {
                     className="navbar bg-body border-bottom"
                     style={{ zIndex: 1040, padding: '10px 16px' }}
                 >
-                    {/* Mobile sidebar toggle */}
+                    {/* Sidebar toggle — visible on ALL screen sizes */}
                     <button
-                        className="btn btn-sm btn-outline-secondary me-2 d-md-none nav-icon-btn"
+                        className="btn btn-sm btn-outline-secondary me-2 nav-icon-btn"
                         onClick={() => setSidebarOpen(v => !v)}
                         style={{ borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 34, height: 34, padding: 0 }}
                         id="sidebar-toggle"
@@ -179,7 +180,12 @@ function HomeInner() {
 
                         <ul className="dropdown-menu dropdown-menu-end">
                             <li>
-                                <span className="dropdown-item-text small" style={{ color: 'var(--text-subtle)', padding: '6px 12px', display: 'block' }}>
+                                <span className="dropdown-item-text small fw-semibold" style={{ color: 'var(--text)', padding: '6px 12px', display: 'block' }}>
+                                    {user?.display_name || user?.email}
+                                </span>
+                            </li>
+                            <li>
+                                <span className="dropdown-item-text small" style={{ color: 'var(--text-subtle)', padding: '2px 12px 6px', display: 'block', fontSize: '0.78rem' }}>
                                     {user?.email}
                                 </span>
                             </li>
@@ -220,12 +226,13 @@ function HomeInner() {
                     />
                 )}
 
-                {/* ── SIDEBAR ── */}
+                {/* ── SIDEBAR ── works on both mobile and desktop ── */}
                 {isMobile ? (
+                    /* Mobile: slide-in drawer */
                     <aside
                         className="bg-body border-end p-3 overflow-auto"
                         style={{
-                            position: 'fixed', top: headerHeight, left: 0, width: 240, bottom: 0,
+                            position: 'fixed', top: headerHeight, left: 0, width: 220, bottom: 0,
                             zIndex: 1051,
                             transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
                             transition: 'transform 0.25s cubic-bezier(0.4,0,0.2,1)',
@@ -234,11 +241,23 @@ function HomeInner() {
                         <LabelManager onSelect={() => setSidebarOpen(false)} />
                     </aside>
                 ) : (
+                    /* Desktop: collapsible sidebar */
                     <aside
-                        className="bg-body border-end p-3 overflow-auto"
-                        style={{ width: 220, flexShrink: 0, position: 'sticky', top: 56, height: 'calc(100vh - 56px)' }}
+                        className="bg-body border-end overflow-auto"
+                        style={{
+                            width: sidebarOpen ? 220 : 0,
+                            minWidth: sidebarOpen ? 220 : 0,
+                            flexShrink: 0,
+                            position: 'sticky',
+                            top: headerHeight,
+                            height: `calc(100vh - ${headerHeight}px)`,
+                            overflow: 'hidden',
+                            transition: 'width 0.25s cubic-bezier(0.4,0,0.2,1), min-width 0.25s cubic-bezier(0.4,0,0.2,1)',
+                        }}
                     >
-                        <LabelManager />
+                        <div style={{ padding: '12px 12px', width: 220 }}>
+                            <LabelManager />
+                        </div>
                     </aside>
                 )}
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pin, Lock, Share2, MoreVertical, Pencil, PinOff, Trash2 } from 'lucide-react';
 import { useNotes } from '../context/NoteContext';
+import { useAuth } from '../context/AuthContext';
 import { unlockTokenStore } from '../utils/unlockTokenStore';
 import DeleteConfirmDialog from './DeleteConfirmDialog';
 import NoteUnlockModal from './NoteUnlockModal';
@@ -101,8 +102,14 @@ function fmt(iso) {
 
 export function GridCard({ note, onOpen }) {
     const { pinNote } = useNotes();
+    const { user } = useAuth();
     const [menu, setMenu] = useState(false);
     const del = useDeleteFlow(note);
+
+    const prefs = user?.preferences ?? {};
+    const noteColor = note.color || prefs.noteColor || '#ffffff';
+    const fontSizeMap = { small: '0.82rem', medium: '0.9rem', large: '1rem' };
+    const fontSize = fontSizeMap[prefs.fontSize] || '0.9rem';
 
     const pinnedBorder = note.is_pinned ? '2px solid var(--warning)' : '1.5px solid var(--border)';
 
@@ -110,7 +117,7 @@ export function GridCard({ note, onOpen }) {
         <>
             <div
                 className="card note-card-grid h-100"
-                style={{ cursor: 'pointer', border: pinnedBorder, borderRadius: 'var(--radius-md)' }}
+                style={{ cursor: 'pointer', border: pinnedBorder, borderRadius: 'var(--radius-md)', background: noteColor }}
                 onClick={() => onOpen(note)}
             >
                 {/* Thumbnail image */}
@@ -154,7 +161,7 @@ export function GridCard({ note, onOpen }) {
                     {/* Content preview */}
                     {note.content && (
                         <p className="card-text text-muted small mb-1"
-                            style={{ display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5 }}>
+                            style={{ display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5, fontSize }}>
                             {note.content.slice(0, 200)}
                         </p>
                     )}
@@ -176,8 +183,14 @@ export function GridCard({ note, onOpen }) {
 
 export function ListRow({ note, onOpen }) {
     const { pinNote } = useNotes();
+    const { user } = useAuth();
     const [menu, setMenu] = useState(false);
     const del = useDeleteFlow(note);
+
+    const prefs = user?.preferences ?? {};
+    const noteColor = note.color || prefs.noteColor || '#ffffff';
+    const fontSizeMap = { small: '0.82rem', medium: '0.9rem', large: '1rem' };
+    const fontSize = fontSizeMap[prefs.fontSize] || '0.9rem';
 
     const pinnedBorder = note.is_pinned ? '1.5px solid var(--warning)' : '1.5px solid var(--border)';
 
@@ -185,7 +198,7 @@ export function ListRow({ note, onOpen }) {
         <>
             <div
                 className="note-card-list d-flex align-items-center gap-3 px-3 py-2 rounded-3 mb-2"
-                style={{ cursor: 'pointer', border: pinnedBorder, position: 'relative', zIndex: menu ? 10 : 1 }}
+                style={{ cursor: 'pointer', border: pinnedBorder, position: 'relative', zIndex: menu ? 10 : 1, background: noteColor }}
                 onClick={() => onOpen(note)}
             >
                 {/* Thumbnail */}
@@ -202,7 +215,7 @@ export function ListRow({ note, onOpen }) {
                         <NoteIcons note={note} />
                     </div>
                     {note.content && (
-                        <span className="text-muted small text-truncate d-block" style={{ lineHeight: 1.4 }}>
+                        <span className="text-muted small text-truncate d-block" style={{ lineHeight: 1.4, fontSize }}>
                             {note.content.slice(0, 100)}
                         </span>
                     )}

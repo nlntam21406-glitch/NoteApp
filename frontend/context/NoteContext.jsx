@@ -13,6 +13,7 @@ const sort = ns => [...ns].sort((a,b) => {
 });
 
 export function NoteProvider({ children }) {
+    const [allNotes,    setAllNotes] = useState([]);
     const [notes,       setNotes]  = useState([]);
     const [labels,      setLabels] = useState([]);
     const [loading,     setLoad]   = useState(true);
@@ -27,19 +28,43 @@ export function NoteProvider({ children }) {
         return () => { window.removeEventListener('online',on); window.removeEventListener('offline',off); };
     },[]);
 
-    const loadNotes = useCallback(async (params = {}) => {
+    // Client-side filter helper
+    const applyFilters = useCallback((raw, q, labelId) => {
+        let result = raw;
+        if (labelId != null) {
+            result = result.filter(n => n.labels?.some(l => l.id === labelId));
+        }
+        if (q && q.trim()) {
+            const lower = q.toLowerCase();
+            result = result.filter(n =>
+                (n.title || '').toLowerCase().includes(lower) ||
+                (n.content || '').toLowerCase().includes(lower) ||
+                n.labels?.some(l => l.name.toLowerCase().includes(lower))
+            );
+        }
+        return result;
+    }, []);
+
+    const loadNotes = useCallback(async () => {
         setLoad(true);
         try {
             if (navigator.onLine) {
-                const {data} = await noteApi.fetchNotes(params);
-                setNotes(data.notes);
-                if (!params.search && !params.label_id) await saveNotes(data.notes);
+                const {data} = await noteApi.fetchNotes({});
+                setAllNotes(data.notes);
+                setNotes(sort(applyFilters(data.notes, searchQuery, filterLabel)));
+                await saveNotes(data.notes);
             } else {
-                setNotes(await getAllNotes());
+                const cached = await getAllNotes();
+                setAllNotes(cached);
+                setNotes(sort(applyFilters(cached, searchQuery, filterLabel)));
             }
-        } catch { setNotes(await getAllNotes()); }
+        } catch {
+            const cached = await getAllNotes();
+            setAllNotes(cached);
+            setNotes(sort(applyFilters(cached, searchQuery, filterLabel)));
+        }
         finally { setLoad(false); }
-    }, []);
+    }, [applyFilters, searchQuery, filterLabel]);
 
     const loadLabels = useCallback(async () => { const {data} = await noteApi.fetchLabels(); setLabels(data.labels); }, []);
     useEffect(() => { loadNotes(); loadLabels(); }, []);
@@ -52,30 +77,40 @@ export function NoteProvider({ children }) {
     }, []);
 
     const toggleView  = useCallback(() => setView(v => { const n = v==='grid'?'list':'grid'; localStorage.setItem('viewMode',n); return n; }), []);
-    const addNote     = useCallback(async () => { const {data} = await noteApi.createNote({title:'',content:''}); setNotes(p=>[data.note,...p]); return data.note; }, []);
+    const addNote     = useCallback(async () => {
+        const {data} = await noteApi.createNote({title:'',content:''});
+        const newNote = data.note;
+        setAllNotes(p => [newNote, ...p]);
+        setNotes(p => sort([newNote, ...p]));
+        return newNote;
+    }, []);
 
     const saveNote = useCallback(async (id, fields) => {
         if (navigator.onLine) {
             const {data} = await noteApi.updateNote(id, fields);
+            setAllNotes(p => p.map(n => n.id===id ? data.note : n));
             setNotes(p => p.map(n => n.id===id ? data.note : n));
             return data.note;
         } else {
             await enqueueSync({type:'update', noteId:id, data: fields});
-            const updated = {...notes.find(n=>n.id===id), ...fields, updated_at: new Date().toISOString()};
+            const base = allNotes.find(n=>n.id===id);
+            const updated = {...base, ...fields, updated_at: new Date().toISOString()};
+            setAllNotes(p => p.map(n => n.id===id ? updated : n));
             setNotes(p => p.map(n => n.id===id ? updated : n));
             requestBackgroundSync();
             return updated;
         }
-    }, [notes]);
+    }, [allNotes]);
 
     const removeNote = useCallback(async (id) => {
         if (navigator.onLine) { await noteApi.deleteNote(id); }
         else { await enqueueSync({type:'delete', noteId:id}); requestBackgroundSync(); }
+        setAllNotes(p => p.filter(n => n.id!==id));
         setNotes(p => p.filter(n => n.id!==id));
         unlockTokenStore.clear(id);
     }, []);
 
-    const pinNote    = useCallback(async (id) => { const {data} = await noteApi.togglePin(id); setNotes(p=>sort(p.map(n=>n.id===id?data.note:n))); }, []);
+    const pinNote    = useCallback(async (id) => { const {data} = await noteApi.togglePin(id); setAllNotes(p=>sort(p.map(n=>n.id===id?data.note:n))); setNotes(p=>sort(p.map(n=>n.id===id?data.note:n))); }, []);
     const addImages  = useCallback(async (nId, files) => { const {data} = await noteApi.uploadImages(nId,files); setNotes(p=>p.map(n=>n.id===nId?{...n,images:data.images}:n)); }, []);
     const delImage   = useCallback(async (nId, path) => { await noteApi.removeImage(nId,path); setNotes(p=>p.map(n=>n.id===nId?{...n,images:n.images.filter(i=>!i.includes(path))}:n)); }, []);
 
@@ -87,10 +122,31 @@ export function NoteProvider({ children }) {
     const createLabel = useCallback(async (name) => { const {data} = await noteApi.createLabel(name); setLabels(p=>[...p,data.label].sort((a,b)=>a.name.localeCompare(b.name))); return data.label; }, []);
     const renameLabel = useCallback(async (id, name) => { await noteApi.updateLabel(id,name); setLabels(p=>p.map(l=>l.id===id?{...l,name}:l)); setNotes(p=>p.map(n=>({...n,labels:n.labels.map(l=>l.id===id?{...l,name}:l)}))); }, []);
     const removeLabel = useCallback(async (id) => { await noteApi.deleteLabel(id); setLabels(p=>p.filter(l=>l.id!==id)); if (filterLabel===id) setFilter(null); setNotes(p=>p.map(n=>({...n,labels:n.labels.filter(l=>l.id!==id)}))); }, [filterLabel]);
-    const syncNoteLabels = useCallback(async (nId, ids) => { const {data} = await noteApi.syncLabels(nId,ids); setNotes(p=>p.map(n=>n.id===nId?{...n,labels:data.labels}:n)); }, []);
+    const syncNoteLabels = useCallback(async (nId, ids) => {
+        const {data} = await noteApi.syncLabels(nId,ids);
+        const updater = p => p.map(n => n.id===nId ? {...n, labels: data.labels} : n);
+        setAllNotes(updater);
+        setNotes(updater);
+        // Recalculate label notes_count from updated allNotes
+        setAllNotes(currentAll => {
+            const updated = currentAll.map(n => n.id===nId ? {...n, labels: data.labels} : n);
+            setLabels(prevLabels => prevLabels.map(l => ({
+                ...l,
+                notes_count: updated.filter(n => n.labels?.some(nl => nl.id === l.id)).length,
+            })));
+            return updated;
+        });
+    }, []);
 
-    const search       = useCallback((q) => { setSearch(q); loadNotes({search:q, label_id:filterLabel}); }, [loadNotes,filterLabel]);
-    const filterByLabel = useCallback((id) => { setFilter(id); loadNotes({search:searchQuery, label_id:id}); }, [loadNotes,searchQuery]);
+    const search       = useCallback((q) => {
+        setSearch(q);
+        setNotes(sort(applyFilters(allNotes, q, filterLabel)));
+    }, [applyFilters, allNotes, filterLabel]);
+
+    const filterByLabel = useCallback((id) => {
+        setFilter(id);
+        setNotes(sort(applyFilters(allNotes, searchQuery, id)));
+    }, [applyFilters, allNotes, searchQuery]);
 
     return (
         <NoteContext.Provider value={{ notes, labels, loading, viewMode, toggleView, searchQuery, filterLabel, isOnline,
