@@ -28,6 +28,37 @@ export function NoteIcons({ note, size = 13 }) {
     );
 }
 
+/* Convert a light pastel hex color to a dark equivalent for dark mode */
+function adaptColorForTheme(hex, isDark) {
+    if (!isDark) return hex;
+    if (!hex || hex === '#ffffff') return 'var(--surface)';
+
+    // Parse hex to RGB
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+
+    // RGB to HSL
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h = 0, s = 0, l = (max + min) / 2;
+    if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+        else if (max === g) h = ((b - r) / d + 2) / 6;
+        else h = ((r - g) / d + 4) / 6;
+    }
+
+    // If the color is nearly white/gray (very low saturation), use surface
+    if (s < 0.05) return 'var(--surface)';
+
+    // Dark mode: keep hue, lower saturation, set lightness to ~15%
+    const darkL = 15;
+    const darkS = Math.round(s * 100 * 0.45);
+    const darkH = Math.round(h * 360);
+    return `hsl(${darkH}, ${darkS}%, ${darkL}%)`;
+}
+
 function Labels({ labels }) {
     if (!labels?.length) return null;
     return (
@@ -107,7 +138,9 @@ export function GridCard({ note, onOpen }) {
     const del = useDeleteFlow(note);
 
     const prefs = user?.preferences ?? {};
-    const noteColor = note.color || prefs.noteColor || '#ffffff';
+    const isDark = prefs.theme === 'dark';
+    const rawColor = note.color || prefs.noteColor || '#ffffff';
+    const noteColor = adaptColorForTheme(rawColor, isDark);
     const fontSizeMap = { small: '0.82rem', medium: '0.9rem', large: '1rem' };
     const fontSize = fontSizeMap[prefs.fontSize] || '0.9rem';
 
@@ -188,7 +221,9 @@ export function ListRow({ note, onOpen }) {
     const del = useDeleteFlow(note);
 
     const prefs = user?.preferences ?? {};
-    const noteColor = note.color || prefs.noteColor || '#ffffff';
+    const isDark = prefs.theme === 'dark';
+    const rawColor = note.color || prefs.noteColor || '#ffffff';
+    const noteColor = adaptColorForTheme(rawColor, isDark);
     const fontSizeMap = { small: '0.82rem', medium: '0.9rem', large: '1rem' };
     const fontSize = fontSizeMap[prefs.fontSize] || '0.9rem';
 
