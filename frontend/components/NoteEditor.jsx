@@ -5,6 +5,7 @@ import { useNotes }         from '../context/NoteContext';
 import { useAutoSave }      from '../hooks/useAutoSave';
 import { useCollaboration } from '../hooks/useCollaboration';
 import { unlockTokenStore } from '../utils/unlockTokenStore';
+import { updateSharedNote } from '../api/shareApi';
 import NoteUnlockModal      from './NoteUnlockModal';
 import NoteLockManager      from './NoteLockManager';
 import { NoteIcons }        from './NoteCard';
@@ -75,7 +76,12 @@ export default function NoteEditor({ note, onClose, onShare, isShared = false, s
     const [showLockMgr, setLockMgr]  = useState(false);
     const [, setCollabs]              = useState([]);
 
-    const { title, setTitle, content, setContent, saving, saved } = useAutoSave(note);
+    // For shared notes with edit permission, use the recipient-specific API
+    const sharedSaveFn = (isShared && sharePermission === 'edit')
+        ? (id, data) => updateSharedNote(id, data)
+        : null;
+
+    const { title, setTitle, content, setContent, saving, saved } = useAutoSave(note, sharedSaveFn);
     const fileRef = useRef();
 
     /* Real-time collaboration */

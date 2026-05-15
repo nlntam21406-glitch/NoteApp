@@ -2,8 +2,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNotes } from '../context/NoteContext';
 
-export function useAutoSave(note) {
+export function useAutoSave(note, saveFn = null) {
     const { saveNote } = useNotes();
+    const save = saveFn ?? saveNote;
     const [title,   setTitle]   = useState(note?.title   ?? '');
     const [content, setContent] = useState(note?.content ?? '');
     const [saving,  setSaving]  = useState(false);
@@ -19,7 +20,7 @@ export function useAutoSave(note) {
     useEffect(() => { titleRef.current   = title;    }, [title]);
     useEffect(() => { contentRef.current = content;  }, [content]);
     useEffect(() => { noteRef.current    = note;     }, [note]);
-    useEffect(() => { saveRef.current    = saveNote; }, [saveNote]);
+    useEffect(() => { saveRef.current    = save;     }, [save]);
 
     useEffect(() => { setTitle(note?.title??''); setContent(note?.content??''); setSaved(false); }, [note?.id]);
 
@@ -53,7 +54,7 @@ export function useAutoSave(note) {
         timer.current = setTimeout(async () => {
             if (!mounted.current) return;
             setSaving(true); setSaved(false);
-            try { await saveNote(note.id, { title, content }); if (mounted.current) { setSaving(false); setSaved(true); setTimeout(()=>{ if(mounted.current) setSaved(false); }, 2000); } }
+            try { await save(note.id, { title, content }); if (mounted.current) { setSaving(false); setSaved(true); setTimeout(()=>{ if(mounted.current) setSaved(false); }, 2000); } }
             catch { if (mounted.current) setSaving(false); }
         }, 200);
         return () => clearTimeout(timer.current);
