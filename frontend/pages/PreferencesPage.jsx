@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { Settings, User, KeyRound, Palette, Type, Camera, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
@@ -21,7 +22,7 @@ function SettingsCard({ title, children }) {
             marginBottom: 16,
             boxShadow: 'var(--shadow-sm)',
         }}>
-            <h2 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 16, color: 'var(--text)' }}>{title}</h2>
+            <h2 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 16, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 7 }}>{title}</h2>
             {children}
         </div>
     );
@@ -163,13 +164,16 @@ export default function PreferencesPage() {
                     ← Back
                 </Link>
                 <div style={{ width: 1, height: 18, background: 'var(--border)' }} />
-                <h1 style={{ fontSize: '1rem', fontWeight: 700, margin: 0, color: 'var(--text)' }}>⚙️ Settings</h1>
+                <h1 style={{ fontSize: '1rem', fontWeight: 700, margin: 0, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 7 }}>
+                    <Settings size={16} strokeWidth={2} style={{ color: 'var(--primary)' }} />
+                    Settings
+                </h1>
             </div>
 
             <div style={{ maxWidth: 600, margin: '0 auto', padding: '28px 20px' }}>
 
                 {/* ── Profile & Avatar ── */}
-                <SettingsCard title="👤 Profile">
+                <SettingsCard title={<><User size={14} strokeWidth={2} /> Profile</>}>
                     {profileError && <div className="alert alert-danger py-2 mb-3" style={{ fontSize: '0.875rem' }}>{profileError}</div>}
                     {profileSaved && <div className="alert alert-success py-2 mb-3" style={{ fontSize: '0.875rem' }}>✓ Profile updated!</div>}
 
@@ -194,7 +198,7 @@ export default function PreferencesPage() {
                             <input ref={fileRef} type="file" accept="image/*" className="d-none" onChange={handleAvatarUpload} />
                             <button style={{ ...btnPrimary, background: 'transparent', color: 'var(--primary)', border: '1.5px solid var(--primary)', marginRight: 8, fontSize: '0.82rem' }}
                                 onClick={() => fileRef.current?.click()} disabled={avatarLoading} id="change-avatar-btn">
-                                {avatarLoading ? 'Uploading…' : '📷 Change avatar'}
+                                {avatarLoading ? 'Uploading…' : <><Camera size={13} strokeWidth={2} className="me-1" />Change avatar</>}
                             </button>
                             {avatarUrl && (
                                 <button style={{ ...btnPrimary, background: 'transparent', color: 'var(--danger)', border: '1.5px solid var(--danger)', fontSize: '0.82rem' }}
@@ -219,7 +223,7 @@ export default function PreferencesPage() {
                 </SettingsCard>
 
                 {/* ── Change Password ── */}
-                <SettingsCard title="🔑 Change Password">
+                <SettingsCard title={<><KeyRound size={14} strokeWidth={2} /> Change Password</>}>
                     {pwError && <div className="alert alert-danger py-2 mb-3" style={{ fontSize: '0.875rem' }}>{pwError}</div>}
                     {pwSaved && <div className="alert alert-success py-2 mb-3" style={{ fontSize: '0.875rem' }}>✓ Password changed!</div>}
                     <Field label="Current password">
@@ -241,7 +245,7 @@ export default function PreferencesPage() {
                 </SettingsCard>
 
                 {/* ── Theme ── */}
-                <SettingsCard title="🎨 Appearance">
+                <SettingsCard title={<><Palette size={14} strokeWidth={2} /> Appearance</>}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div>
                             <p style={{ margin: 0, fontWeight: 600, fontSize: '0.9rem', color: 'var(--text)' }}>Dark Mode</p>
@@ -258,8 +262,10 @@ export default function PreferencesPage() {
                                     disabled={themeSaving}
                                     onChange={e => handleThemeChange(e.target.checked ? 'dark' : 'light')}
                                 />
-                                <label className="form-check-label ms-2 fw-semibold" htmlFor="themeToggle" style={{ fontSize: '0.875rem', color: 'var(--text)' }}>
-                                    {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
+                                <label className="form-check-label ms-2 fw-semibold" htmlFor="themeToggle" style={{ fontSize: '0.875rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 5 }}>
+                                    {theme === 'dark'
+                                        ? <><Moon size={14} strokeWidth={2} /> Dark</>
+                                        : <><Sun size={14} strokeWidth={2} /> Light</>}
                                 </label>
                             </div>
                         </div>
@@ -267,7 +273,7 @@ export default function PreferencesPage() {
                 </SettingsCard>
 
                 {/* ── Font size ── */}
-                <SettingsCard title="✏️ Note Font Size">
+                <SettingsCard title={<><Type size={14} strokeWidth={2} /> Note Font Size</>}>
                     <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
                         {[['small', 'Small', '0.8rem'], ['medium', 'Medium', '1rem'], ['large', 'Large', '1.25rem']].map(([v, l, s]) => (
                             <button
@@ -296,7 +302,7 @@ export default function PreferencesPage() {
                 </SettingsCard>
 
                 {/* ── Default note color ── */}
-                <SettingsCard title="🎨 Default Note Color">
+                <SettingsCard title={<><Palette size={14} strokeWidth={2} /> Default Note Color</>}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
                         {NOTE_COLORS.map(({ label, value }) => (
                             <button

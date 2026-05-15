@@ -1,3 +1,4 @@
+import { WifiOff } from 'lucide-react';
 import { useNotes } from '../context/NoteContext';
 
 export default function OfflineBanner() {
@@ -22,7 +23,7 @@ export default function OfflineBanner() {
                 letterSpacing: '0.01em',
             }}
         >
-            <span style={{ fontSize: '1rem' }}>📴</span>
+            <WifiOff size={15} strokeWidth={2} style={{ flexShrink: 0 }} />
             You're offline — changes will sync when connection is restored.
         </div>
     );

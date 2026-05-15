@@ -1,6 +1,7 @@
 // LoginPage + RegisterPage — improved UI, same functionality
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { NotebookPen, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 /* Shared layout wrapper */
@@ -9,7 +10,10 @@ function AuthLayout({ children, title, subtitle }) {
         <div className="auth-page">
             <div className="auth-card">
                 <div className="text-center mb-4">
-                    <div className="auth-logo">📝 NoteApp</div>
+                    <div className="auth-logo" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                        <NotebookPen size={28} strokeWidth={2.2} />
+                        NoteApp
+                    </div>
                     <h1 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 4 }}>{title}</h1>
                     <p className="auth-subtitle mb-0">{subtitle}</p>
                 </div>
@@ -59,7 +63,7 @@ export function LoginPage() {
         <AuthLayout title="Welcome back" subtitle="Sign in to access your notes">
             {err && (
                 <div className="alert alert-danger d-flex align-items-center gap-2 py-2 mb-3" style={{ fontSize: '0.875rem' }}>
-                    <span>⚠️</span> {err}
+                    <AlertCircle size={15} strokeWidth={2} style={{ flexShrink: 0 }} /> {err}
                 </div>
             )}
             <form onSubmit={submit} noValidate>
@@ -119,7 +123,7 @@ export function RegisterPage() {
         <AuthLayout title="Create account" subtitle="Start organizing your notes today">
             {errs.general && (
                 <div className="alert alert-danger d-flex align-items-center gap-2 py-2 mb-3" style={{ fontSize: '0.875rem' }}>
-                    <span>⚠️</span> {errs.general}
+                    <AlertCircle size={15} strokeWidth={2} style={{ flexShrink: 0 }} /> {errs.general}
                 </div>
             )}
             <form onSubmit={submit} noValidate>

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Search, X } from 'lucide-react';
 import { useNotes } from '../context/NoteContext';
 
 export default function SearchBar() {
@@ -38,7 +39,7 @@ export default function SearchBar() {
                 boxShadow: focused ? '0 0 0 3px rgba(99,102,241,0.15)' : 'none',
             }}
         >
-            <span style={{ color: 'var(--text-subtle)', fontSize: '0.9rem', flexShrink: 0 }}>🔍</span>
+            <Search size={15} strokeWidth={2} style={{ color: 'var(--text-subtle)', flexShrink: 0 }} />
             <input
                 id="search-notes-input"
                 type="search"
@@ -73,7 +74,7 @@ export default function SearchBar() {
                         flexShrink: 0,
                         transition: 'var(--transition)',
                     }}
-                >✕</button>
+                ><X size={14} strokeWidth={2.5} /></button>
             )}
         </div>
     );

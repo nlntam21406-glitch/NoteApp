@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Lock } from 'lucide-react';
 import { useNotes } from '../context/NoteContext';
 export default function NoteUnlockModal({ note, onUnlocked, onCancel }) {
     const { unlockNote } = useNotes();
@@ -15,7 +16,11 @@ export default function NoteUnlockModal({ note, onUnlocked, onCancel }) {
         <div className="modal d-block" style={{backgroundColor:'rgba(0,0,0,0.55)',zIndex:1060}} onClick={e=>e.target===e.currentTarget&&onCancel()}>
             <div className="modal-dialog modal-dialog-centered modal-sm" onClick={e=>e.stopPropagation()}>
                 <div className="modal-content">
-                    <div className="modal-header border-0 pb-0"><div><div style={{fontSize:32}}>🔒</div><h6 className="modal-title fw-bold mt-2">Protected Note</h6>{note.title&&<p className="text-muted small mb-0">"{note.title.slice(0,40)}{note.title.length>40?'…':''}"</p>}</div></div>
+                    <div className="modal-header border-0 pb-0"><div>
+                        <div style={{display:'flex',alignItems:'center',justifyContent:'center',width:56,height:56,borderRadius:'50%',background:'rgba(79,70,229,0.1)',color:'var(--primary)',margin:'0 auto 10px'}}>
+                            <Lock size={26} strokeWidth={1.8} />
+                        </div>
+                        <h6 className="modal-title fw-bold mt-2 text-center">Protected Note</h6>{note.title&&<p className="text-muted small mb-0">"{note.title.slice(0,40)}{note.title.length>40?'…':''}"</p>}</div></div>
                     <form onSubmit={submit}>
                         <div className="modal-body pt-2">
                             <p className="text-muted small mb-3">Enter the password to access this note.</p>

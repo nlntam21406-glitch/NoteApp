@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Share2, X } from 'lucide-react';
 import { getShares, shareNote, updateShare, revokeShare } from '../api/shareApi';
 export default function ShareManager({ note, onClose }) {
     const [shares, setShares] = useState([]);
@@ -34,7 +35,7 @@ export default function ShareManager({ note, onClose }) {
         <div className="modal d-block" style={{backgroundColor:'rgba(0,0,0,0.5)',zIndex:1060}} onClick={e=>e.target===e.currentTarget&&onClose()}>
             <div className="modal-dialog modal-dialog-centered" style={{maxWidth:460}} onClick={e=>e.stopPropagation()}>
                 <div className="modal-content">
-                    <div className="modal-header border-0 pb-0"><h6 className="modal-title fw-bold">🔗 Share Note</h6><button type="button" className="btn-close" onClick={onClose}/></div>
+                    <div className="modal-header border-0 pb-0"><h6 className="modal-title fw-bold d-flex align-items-center gap-2"><Share2 size={15} strokeWidth={2}/>Share Note</h6><button type="button" className="btn-close" onClick={onClose}/></div>
                     <div className="modal-body">
                         {msg && <div className="alert alert-success py-2 small">{msg}</div>}
                         {err && <div className="alert alert-danger py-2 small">{err}</div>}

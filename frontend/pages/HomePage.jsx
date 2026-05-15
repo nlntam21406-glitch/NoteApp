@@ -2,6 +2,11 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import {
+    Menu, NotebookPen, LayoutGrid, LayoutList,
+    Share2, Settings, LogOut, Pin, Plus,
+    FileText,
+} from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
 import { NoteProvider, useNotes } from '../context/NoteContext';
@@ -62,15 +67,20 @@ function HomeInner() {
         letterSpacing: '0.08em',
         color: 'var(--text-subtle)',
         marginBottom: 10,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 5,
     };
 
     /* ── Active view toggle button style ── */
     const viewBtn = (active) => ({
         border: 'none',
         borderRadius: 'var(--radius-sm)',
-        padding: '5px 10px',
+        padding: '5px 8px',
         cursor: 'pointer',
-        fontSize: '0.9rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         transition: 'var(--transition)',
         background: active ? 'var(--primary)' : 'transparent',
         color: active ? '#fff' : 'var(--text-muted)',
@@ -91,17 +101,18 @@ function HomeInner() {
                 >
                     {/* Mobile sidebar toggle */}
                     <button
-                        className="btn btn-sm btn-outline-secondary me-2 d-md-none"
+                        className="btn btn-sm btn-outline-secondary me-2 d-md-none nav-icon-btn"
                         onClick={() => setSidebarOpen(v => !v)}
-                        style={{ borderRadius: 'var(--radius-sm)' }}
+                        style={{ borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 34, height: 34, padding: 0 }}
                         id="sidebar-toggle"
                     >
-                        ☰
+                        <Menu size={16} />
                     </button>
 
                     {/* Logo */}
-                    <span className="navbar-brand fw-bold mb-0" style={{ fontSize: '1.1rem' }}>
-                        📝 NoteApp
+                    <span className="navbar-brand fw-bold mb-0" style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 7 }}>
+                        <NotebookPen size={20} strokeWidth={2.2} style={{ color: 'var(--primary)' }} />
+                        NoteApp
                     </span>
 
                     {/* Desktop search */}
@@ -125,24 +136,28 @@ function HomeInner() {
                             onClick={() => viewMode !== 'grid' && toggleView()}
                             title="Grid view"
                             id="view-grid"
-                        >▦</button>
+                        >
+                            <LayoutGrid size={15} />
+                        </button>
                         <button
                             style={viewBtn(viewMode === 'list')}
                             onClick={() => viewMode !== 'list' && toggleView()}
                             title="List view"
                             id="view-list"
-                        >☰</button>
+                        >
+                            <LayoutList size={15} />
+                        </button>
                     </div>
 
                     {/* Shared notes link */}
                     <Link
                         to="/shared-with-me"
-                        className="btn btn-sm btn-outline-secondary me-2"
+                        className="btn btn-sm btn-outline-secondary me-2 nav-icon-btn"
                         title="Notes shared with me"
-                        style={{ borderRadius: 'var(--radius-sm)' }}
+                        style={{ borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 34, height: 34, padding: 0 }}
                         id="shared-with-me-link"
                     >
-                        🔗
+                        <Share2 size={15} />
                     </Link>
 
                     {/* User dropdown */}
@@ -170,12 +185,14 @@ function HomeInner() {
                             </li>
                             <li><hr className="dropdown-divider" /></li>
                             <li>
-                                <Link className="dropdown-item small" to="/preferences" id="preferences-link">
-                                    ⚙️ Preferences
+                                <Link className="dropdown-item small d-flex align-items-center gap-2" to="/preferences" id="preferences-link">
+                                    <Settings size={14} strokeWidth={2} />
+                                    Preferences
                                 </Link>
                             </li>
                             <li>
-                                <button className="dropdown-item small text-danger" onClick={logout} id="logout-btn">
+                                <button className="dropdown-item small text-danger d-flex align-items-center gap-2" onClick={logout} id="logout-btn">
+                                    <LogOut size={14} strokeWidth={2} />
                                     Sign out
                                 </button>
                             </li>
@@ -239,12 +256,13 @@ function HomeInner() {
                             marginBottom: 24,
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 8,
+                            gap: 7,
                             fontWeight: 600,
                             fontSize: '0.9rem',
                         }}
                     >
-                        <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>+</span> New note
+                        <Plus size={16} strokeWidth={2.5} />
+                        New note
                     </button>
 
                     {/* Loading */}
@@ -255,16 +273,19 @@ function HomeInner() {
 
                     ) : notes.length === 0 ? (
                         /* Empty state */
-                        <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
-                            <div style={{ fontSize: 64, marginBottom: 16 }}>📝</div>
+                        <div className="empty-state-container">
+                            <div className="empty-state-icon-wrap">
+                                <FileText size={48} strokeWidth={1.5} />
+                            </div>
                             <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: 8, color: 'var(--text)' }}>No notes yet</h2>
-                            <p style={{ fontSize: '0.9rem', marginBottom: 20 }}>Create your first note to get started.</p>
+                            <p style={{ fontSize: '0.9rem', marginBottom: 20, color: 'var(--text-muted)' }}>Create your first note to get started.</p>
                             <button
                                 className="btn btn-primary btn-sm"
                                 onClick={handleNew}
-                                style={{ borderRadius: 'var(--radius-xl)', padding: '8px 20px' }}
+                                style={{ borderRadius: 'var(--radius-xl)', padding: '8px 20px', display: 'inline-flex', alignItems: 'center', gap: 6 }}
                             >
-                                + Create note
+                                <Plus size={14} strokeWidth={2.5} />
+                                Create note
                             </button>
                         </div>
 
@@ -273,7 +294,10 @@ function HomeInner() {
                             {/* Pinned notes */}
                             {pinnedNotes.length > 0 && (
                                 <section style={{ marginBottom: 28 }}>
-                                    <p style={sectionLabel}>📌 Pinned</p>
+                                    <p style={sectionLabel}>
+                                        <Pin size={11} strokeWidth={2.5} />
+                                        Pinned
+                                    </p>
                                     {viewMode === 'grid' ? (
                                         <div style={gridStyle}>
                                             {pinnedNotes.map(note => <GridCard key={note.id} note={note} onOpen={openNote} />)}

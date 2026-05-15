@@ -1,6 +1,7 @@
 // Recipient view: all notes shared with the current user
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Share2, User, Calendar, Pencil, Eye } from 'lucide-react';
 import { getSharedWithMe } from '../api/shareApi';
 import NoteEditor from '../components/NoteEditor';
 import { NoteProvider } from '../context/NoteContext';
@@ -53,8 +54,9 @@ function SharedWithMeInner() {
                     ← My Notes
                 </Link>
                 <div style={{ width: 1, height: 18, background: 'var(--border)' }} />
-                <h1 style={{ fontSize: '1rem', fontWeight: 700, margin: 0, color: 'var(--text)' }}>
-                    🔗 Shared with me
+                <h1 style={{ fontSize: '1rem', fontWeight: 700, margin: 0, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 7 }}>
+                    <Share2 size={16} strokeWidth={2} style={{ color: 'var(--primary)' }} />
+                    Shared with me
                 </h1>
             </div>
 
@@ -69,12 +71,14 @@ function SharedWithMeInner() {
 
                 {/* Empty state */}
                 {!loading && shares.length === 0 && (
-                    <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
-                        <div style={{ fontSize: 60, marginBottom: 16 }}>🔗</div>
+                    <div className="empty-state-container">
+                        <div className="empty-state-icon-wrap">
+                            <Share2 size={48} strokeWidth={1.5} />
+                        </div>
                         <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: 8, color: 'var(--text)' }}>
                             No shared notes
                         </h2>
-                        <p style={{ fontSize: '0.9rem' }}>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
                             When someone shares a note with you, it will appear here.
                         </p>
                     </div>
@@ -129,22 +133,27 @@ function SharedWithMeInner() {
 
                             {/* Share metadata: who shared, when, permission */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                                    👤 Shared by <strong style={{ color: 'var(--text)' }}>{s.shared_by.display_name}</strong>
-                                    <span style={{ opacity: 0.6 }}> ({s.shared_by.email})</span>
+                                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                    <User size={12} strokeWidth={2} />
+                                    Shared by <strong style={{ color: 'var(--text)' }}>{s.shared_by.display_name}</strong>
+                                    <span style={{ opacity: 0.6 }}>({s.shared_by.email})</span>
                                 </span>
-                                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                                    📅 {fmt(s.shared_at)}
+                                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                    <Calendar size={12} strokeWidth={2} />
+                                    {fmt(s.shared_at)}
                                 </span>
                                 <span
-                                    className="badge"
+                                    className="badge d-flex align-items-center gap-1"
                                     style={{
                                         background: s.permission === 'edit' ? '#d1fae5' : 'var(--surface-2)',
                                         color: s.permission === 'edit' ? '#065f46' : 'var(--text-muted)',
                                         fontSize: '0.72rem',
                                     }}
                                 >
-                                    {s.permission === 'edit' ? '✏️ Can edit' : '👁 Read only'}
+                                    {s.permission === 'edit'
+                                        ? <><Pencil size={11} strokeWidth={2} /> Can edit</>  
+                                        : <><Eye size={11} strokeWidth={2} /> Read only</>
+                                    }
                                 </span>
                             </div>
                         </div>

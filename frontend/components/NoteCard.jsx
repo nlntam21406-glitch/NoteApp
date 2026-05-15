@@ -1,15 +1,28 @@
 import { useState } from 'react';
+import { Pin, Lock, Share2, MoreVertical, Pencil, PinOff, Trash2 } from 'lucide-react';
 import { useNotes } from '../context/NoteContext';
 import { unlockTokenStore } from '../utils/unlockTokenStore';
 import DeleteConfirmDialog from './DeleteConfirmDialog';
 import NoteUnlockModal from './NoteUnlockModal';
 
-export function NoteIcons({ note, size = '0.82rem' }) {
+export function NoteIcons({ note, size = 13 }) {
     return (
         <span className="d-inline-flex gap-1 align-items-center">
-            {note.is_pinned && <span title="Pinned" style={{ fontSize: size }}>📌</span>}
-            {note.is_locked && <span title="Password protected" style={{ fontSize: size }}>🔒</span>}
-            {note.is_shared && <span title="Shared" style={{ fontSize: size }}>🔗</span>}
+            {note.is_pinned && (
+                <span title="Pinned" className="note-status-icon note-status-pin">
+                    <Pin size={size} strokeWidth={2.2} />
+                </span>
+            )}
+            {note.is_locked && (
+                <span title="Password protected" className="note-status-icon note-status-lock">
+                    <Lock size={size} strokeWidth={2.2} />
+                </span>
+            )}
+            {note.is_shared && (
+                <span title="Shared" className="note-status-icon note-status-share">
+                    <Share2 size={size} strokeWidth={2.2} />
+                </span>
+            )}
         </span>
     );
 }
@@ -48,12 +61,30 @@ function useDeleteFlow(note) {
 function Menu({ note, onPin, onEdit, onDelete, onClose }) {
     return (
         <>
-            <div className="position-fixed top-0 start-0 w-100 h-100" style={{ zIndex: 999 }} onClick={onClose} />
-            <ul className="dropdown-menu show" style={{ zIndex: 1000, minWidth: 150, right: 0, left: 'auto', top: '100%' }}>
-                <li><button className="dropdown-item small" onClick={onEdit}>✏️ Edit</button></li>
-                <li><button className="dropdown-item small" onClick={onPin}>{note.is_pinned ? '📌 Unpin' : '📌 Pin to top'}</button></li>
+            <div className="position-fixed top-0 start-0 w-100 h-100" style={{ zIndex: 1998 }} onClick={onClose} />
+            <ul className="dropdown-menu show" style={{ zIndex: 1999, minWidth: 160, right: 0, left: 'auto', top: '100%', position: 'absolute' }}>
+                <li>
+                    <button className="dropdown-item small d-flex align-items-center gap-2" onClick={onEdit}>
+                        <Pencil size={13} strokeWidth={2} style={{ color: 'var(--text-muted)' }} />
+                        Edit
+                    </button>
+                </li>
+                <li>
+                    <button className="dropdown-item small d-flex align-items-center gap-2" onClick={onPin}>
+                        {note.is_pinned
+                            ? <PinOff size={13} strokeWidth={2} style={{ color: 'var(--text-muted)' }} />
+                            : <Pin size={13} strokeWidth={2} style={{ color: 'var(--text-muted)' }} />
+                        }
+                        {note.is_pinned ? 'Unpin' : 'Pin to top'}
+                    </button>
+                </li>
                 <li><hr className="dropdown-divider" /></li>
-                <li><button className="dropdown-item small text-danger" onClick={onDelete}>🗑️ Delete</button></li>
+                <li>
+                    <button className="dropdown-item small text-danger d-flex align-items-center gap-2" onClick={onDelete}>
+                        <Trash2 size={13} strokeWidth={2} />
+                        Delete
+                    </button>
+                </li>
             </ul>
         </>
     );
@@ -94,12 +125,12 @@ export function GridCard({ note, onOpen }) {
                         <NoteIcons note={note} />
                         <div className="position-relative" onClick={e => e.stopPropagation()}>
                             <button
-                                className="btn btn-sm btn-link text-secondary p-0"
-                                style={{ lineHeight: 1, fontSize: '1.2rem', opacity: 0.6 }}
+                                className="btn btn-sm btn-link text-secondary p-0 note-menu-btn"
                                 onClick={() => setMenu(v => !v)}
                                 id={`grid-menu-${note.id}`}
+                                title="More options"
                             >
-                                ⋮
+                                <MoreVertical size={15} strokeWidth={2} />
                             </button>
                             {menu && (
                                 <Menu
@@ -154,7 +185,7 @@ export function ListRow({ note, onOpen }) {
         <>
             <div
                 className="note-card-list d-flex align-items-center gap-3 px-3 py-2 rounded-3 mb-2"
-                style={{ cursor: 'pointer', border: pinnedBorder }}
+                style={{ cursor: 'pointer', border: pinnedBorder, position: 'relative', zIndex: menu ? 10 : 1 }}
                 onClick={() => onOpen(note)}
             >
                 {/* Thumbnail */}
@@ -183,12 +214,12 @@ export function ListRow({ note, onOpen }) {
                     <span className="text-muted" style={{ fontSize: '0.7rem' }}>{fmt(note.updated_at)}</span>
                     <div className="position-relative">
                         <button
-                            className="btn btn-sm btn-link text-secondary p-0"
-                            style={{ opacity: 0.6 }}
+                            className="btn btn-sm btn-link text-secondary p-0 note-menu-btn"
                             onClick={() => setMenu(v => !v)}
                             id={`list-menu-${note.id}`}
+                            title="More options"
                         >
-                            ⋮
+                            <MoreVertical size={15} strokeWidth={2} />
                         </button>
                         {menu && (
                             <Menu

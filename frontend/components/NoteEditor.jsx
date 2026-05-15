@@ -1,11 +1,13 @@
 // src/components/NoteEditor.jsx — shared create/edit modal, NO save button, auto-save 500ms
-import { useRef, useCallback, useState, useEffect } from 'react';
+import { useRef, useCallback, useState } from 'react';
+import { Pin, Share2, Lock, Unlock, Tag, Image, Eye } from 'lucide-react';
 import { useNotes }         from '../context/NoteContext';
 import { useAutoSave }      from '../hooks/useAutoSave';
 import { useCollaboration } from '../hooks/useCollaboration';
 import { unlockTokenStore } from '../utils/unlockTokenStore';
 import NoteUnlockModal      from './NoteUnlockModal';
 import NoteLockManager      from './NoteLockManager';
+import { NoteIcons }        from './NoteCard';
 
 /* ── LabelPicker inline ── */
 function LabelPicker({ note }) {
@@ -23,12 +25,13 @@ function LabelPicker({ note }) {
     return (
         <div className="position-relative d-inline-block">
             <button
-                className="btn btn-sm btn-outline-secondary"
+                className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
                 style={{ fontSize: '0.78rem', borderRadius: 'var(--radius-sm)' }}
                 onClick={() => setOpen(v => !v)}
                 id="label-picker-btn"
             >
-                🏷️ Labels
+                <Tag size={13} strokeWidth={2} />
+                Labels
             </button>
             {open && (
                 <>
@@ -125,44 +128,48 @@ export default function NoteEditor({ note, onClose, onShare, isShared = false, s
                                     <>
                                         {/* Pin button */}
                                         <button
-                                            className={`btn btn-sm ${note.is_pinned ? 'btn-warning' : 'btn-outline-secondary'}`}
+                                            className={`btn btn-sm d-flex align-items-center gap-1 ${note.is_pinned ? 'btn-warning' : 'btn-outline-secondary'}`}
                                             title={note.is_pinned ? 'Unpin' : 'Pin'}
                                             onClick={() => pinNote(note.id)}
                                             id="pin-note-btn"
                                             style={{ borderRadius: 'var(--radius-sm)' }}
                                         >
-                                            📌
+                                            <Pin size={14} strokeWidth={2} />
                                         </button>
 
                                         {/* Share button */}
                                         {onShare && (
                                             <button
-                                                className={`btn btn-sm ${note.is_shared ? 'btn-success' : 'btn-outline-secondary'}`}
+                                                className={`btn btn-sm d-flex align-items-center gap-1 ${note.is_shared ? 'btn-success' : 'btn-outline-secondary'}`}
                                                 title="Share note"
                                                 onClick={onShare}
                                                 id="share-note-btn"
                                                 style={{ borderRadius: 'var(--radius-sm)' }}
                                             >
-                                                🔗
+                                                <Share2 size={14} strokeWidth={2} />
                                             </button>
                                         )}
 
                                         {/* Lock button */}
                                         <button
-                                            className={`btn btn-sm ${note.is_locked ? 'btn-danger' : 'btn-outline-secondary'}`}
+                                            className={`btn btn-sm d-flex align-items-center gap-1 ${note.is_locked ? 'btn-danger' : 'btn-outline-secondary'}`}
                                             title={note.is_locked ? 'Manage lock' : 'Lock note'}
                                             onClick={() => setLockMgr(true)}
                                             id="lock-note-btn"
                                             style={{ borderRadius: 'var(--radius-sm)' }}
                                         >
-                                            {note.is_locked ? '🔒' : '🔓'}
+                                            {note.is_locked
+                                                ? <Lock size={14} strokeWidth={2} />
+                                                : <Unlock size={14} strokeWidth={2} />
+                                            }
                                         </button>
                                     </>
                                 )}
 
                                 {readOnly && (
-                                    <span className="badge" style={{ background: 'var(--surface-2)', color: 'var(--text-muted)', borderRadius: 99 }}>
-                                        👁 Read only
+                                    <span className="badge d-flex align-items-center gap-1" style={{ background: 'var(--surface-2)', color: 'var(--text-muted)', borderRadius: 99 }}>
+                                        <Eye size={12} strokeWidth={2} />
+                                        Read only
                                     </span>
                                 )}
 
@@ -263,19 +270,18 @@ export default function NoteEditor({ note, onClose, onShare, isShared = false, s
                                 <>
                                     <input ref={fileRef} type="file" accept="image/*" multiple className="d-none" onChange={handleImages} />
                                     <button
-                                        className="btn btn-outline-secondary btn-sm"
+                                        className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
                                         onClick={() => fileRef.current?.click()}
                                         id="add-image-btn"
                                         style={{ borderRadius: 'var(--radius-sm)' }}
                                     >
-                                        🖼️ Add image
+                                        <Image size={13} strokeWidth={2} />
+                                        Add image
                                     </button>
                                 </>
                             )}
-                            <div className="ms-auto d-flex gap-2 align-items-center small" style={{ color: 'var(--text-subtle)' }}>
-                                {note.is_pinned && <span title="Pinned">📌</span>}
-                                {note.is_locked && <span title="Password protected">🔒</span>}
-                                {note.is_shared && <span title="Shared">🔗</span>}
+                            <div className="ms-auto d-flex gap-2 align-items-center">
+                                <NoteIcons note={note} size={12} />
                             </div>
                         </div>
                     </div>

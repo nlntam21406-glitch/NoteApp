@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { NotebookPen, AlertCircle, CheckCircle, XCircle, Mail, Hash } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
@@ -9,7 +10,10 @@ function AuthLayout({ children, title, subtitle }) {
         <div className="auth-page">
             <div className="auth-card">
                 <div className="text-center mb-4">
-                    <div className="auth-logo">📝 NoteApp</div>
+                    <div className="auth-logo" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                        <NotebookPen size={28} strokeWidth={2.2} />
+                        NoteApp
+                    </div>
                     <h1 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 4 }}>{title}</h1>
                     <p className="auth-subtitle mb-0">{subtitle}</p>
                 </div>
@@ -70,8 +74,8 @@ export function ForgotPasswordPage() {
 
     return (
         <AuthLayout title="Forgot Password" subtitle="We'll send a reset link or OTP to your email.">
-            {msg && <div className="alert alert-success py-2 mb-3" style={{ fontSize: '0.875rem' }}>✓ {msg}</div>}
-            {err && <div className="alert alert-danger py-2 mb-3" style={{ fontSize: '0.875rem' }}>⚠️ {err}</div>}
+            {msg && <div className="alert alert-success py-2 mb-3 d-flex align-items-center gap-2" style={{ fontSize: '0.875rem' }}><CheckCircle size={14} strokeWidth={2}/> {msg}</div>}
+            {err && <div className="alert alert-danger py-2 mb-3 d-flex align-items-center gap-2" style={{ fontSize: '0.875rem' }}><AlertCircle size={14} strokeWidth={2}/> {err}</div>}
             <form onSubmit={submit} noValidate>
                 <Field label="Email address" type="email" value={email}
                     onChange={e => setEmail(e.target.value)} autoFocus placeholder="you@example.com" />
@@ -79,7 +83,7 @@ export function ForgotPasswordPage() {
                 <div className="mb-3">
                     <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text)' }}>Reset method</label>
                     <div className="d-flex gap-3">
-                        {[['link', '📧 Email link'], ['otp', '🔢 OTP code']].map(([v, l]) => (
+                        {[['link', <><Mail size={13} strokeWidth={2} className="me-1" />Email link</>], ['otp', <><Hash size={13} strokeWidth={2} className="me-1" />OTP code</>]].map(([v, l]) => (
                             <label key={v} className="d-flex align-items-center gap-2" style={{ cursor: 'pointer', fontSize: '0.9rem', color: 'var(--text)' }}>
                                 <input className="form-check-input m-0" type="radio" id={v} value={v}
                                     checked={method === v} onChange={() => setMethod(v)} />
@@ -136,8 +140,8 @@ export function ResetPasswordPage() {
 
     return (
         <AuthLayout title="Reset Password" subtitle={otpMode ? 'Enter the OTP sent to your email' : 'Choose your new password'}>
-            {msg && <div className="alert alert-success py-2 mb-3" style={{ fontSize: '0.875rem' }}>✓ {msg}</div>}
-            {err && <div className="alert alert-danger py-2 mb-3" style={{ fontSize: '0.875rem' }}>⚠️ {err}</div>}
+            {msg && <div className="alert alert-success py-2 mb-3 d-flex align-items-center gap-2" style={{ fontSize: '0.875rem' }}><CheckCircle size={14} strokeWidth={2}/> {msg}</div>}
+            {err && <div className="alert alert-danger py-2 mb-3 d-flex align-items-center gap-2" style={{ fontSize: '0.875rem' }}><AlertCircle size={14} strokeWidth={2}/> {err}</div>}
 
             {otpMode ? (
                 <form onSubmit={verifyOtp} noValidate>
@@ -181,8 +185,10 @@ export function VerifyEmailPage() {
             .catch(e => { setStatus('error'); setMessage(e.response?.data?.message || 'Verification failed.'); });
     }, []);
 
-    const icon   = status === 'loading' ? null : status === 'success' ? '✅' : '❌';
-    const color  = status === 'success' ? 'var(--success)' : 'var(--danger)';
+    const iconEl = status === 'loading' ? null
+        : status === 'success'
+            ? <div style={{display:'flex',alignItems:'center',justifyContent:'center',width:72,height:72,borderRadius:'50%',background:'rgba(16,185,129,0.1)',color:'var(--success)',margin:'0 auto 12px'}}><CheckCircle size={40} strokeWidth={1.8}/></div>
+            : <div style={{display:'flex',alignItems:'center',justifyContent:'center',width:72,height:72,borderRadius:'50%',background:'rgba(239,68,68,0.1)',color:'var(--danger)',margin:'0 auto 12px'}}><XCircle size={40} strokeWidth={1.8}/></div>;
 
     return (
         <AuthLayout
@@ -191,7 +197,7 @@ export function VerifyEmailPage() {
         >
             <div className="text-center py-2">
                 {status === 'loading' && <div className="spinner-border text-primary" style={{ width: 48, height: 48 }} />}
-                {icon && <div style={{ fontSize: 56 }}>{icon}</div>}
+                {iconEl}
                 {status === 'success' && (
                     <Link to="/" className="btn btn-primary mt-3" style={{ borderRadius: 'var(--radius-md)', padding: '0.6rem 2rem' }}>
                         Go to My Notes

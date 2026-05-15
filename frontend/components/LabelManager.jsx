@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Tag, FileStack, Pencil, Trash2, Plus, Check, X } from 'lucide-react';
 import { useNotes } from '../context/NoteContext';
 
 export default function LabelManager({ onSelect }) {
@@ -35,8 +36,12 @@ export default function LabelManager({ onSelect }) {
                 letterSpacing: '0.08em',
                 color: 'var(--text-subtle)',
                 padding: '0 8px',
-                marginBottom: 6
+                marginBottom: 6,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
             }}>
+                <Tag size={10} strokeWidth={2.5} />
                 Labels
             </p>
 
@@ -62,7 +67,8 @@ export default function LabelManager({ onSelect }) {
                     fontFamily: 'var(--font-base)',
                 }}
             >
-                <span style={{ fontSize: '0.9rem' }}>🗒️</span> All notes
+                <FileStack size={14} strokeWidth={2} />
+                All notes
             </button>
 
             {/* Label list */}
@@ -82,17 +88,21 @@ export default function LabelManager({ onSelect }) {
                                 style={{ fontSize: '0.82rem', height: 30 }}
                             />
                             <button
-                                className="btn btn-sm btn-success px-2 py-0"
-                                style={{ height: 30, fontSize: '0.8rem' }}
+                                className="btn btn-sm btn-success px-2 py-0 d-flex align-items-center"
+                                style={{ height: 30 }}
                                 onClick={() => saveRename(l.id)}
                                 title="Save"
-                            >✓</button>
+                            >
+                                <Check size={13} strokeWidth={2.5} />
+                            </button>
                             <button
-                                className="btn btn-sm btn-outline-secondary px-2 py-0"
-                                style={{ height: 30, fontSize: '0.8rem' }}
+                                className="btn btn-sm btn-outline-secondary px-2 py-0 d-flex align-items-center"
+                                style={{ height: 30 }}
                                 onClick={() => setEditId(null)}
                                 title="Cancel"
-                            >✕</button>
+                            >
+                                <X size={13} strokeWidth={2.5} />
+                            </button>
                         </>
                     ) : (
                         <>
@@ -117,7 +127,7 @@ export default function LabelManager({ onSelect }) {
                                     textAlign: 'left',
                                 }}
                             >
-                                <span style={{ fontSize: '0.9rem' }}>🏷️</span>
+                                <Tag size={13} strokeWidth={2} />
                                 <span className="text-truncate" style={{ maxWidth: 110 }}>{l.name}</span>
                                 {l.notes_count != null && (
                                     <span style={{ marginLeft: 'auto', fontSize: '0.7rem', opacity: 0.6 }}>
@@ -128,19 +138,23 @@ export default function LabelManager({ onSelect }) {
 
                             {/* Rename */}
                             <button
-                                className="btn btn-sm btn-link p-0"
+                                className="btn btn-sm btn-link p-0 d-flex align-items-center label-action-btn"
                                 title="Rename label"
-                                style={{ fontSize: '0.78rem', color: 'var(--text-subtle)', opacity: 0.7 }}
+                                style={{ color: 'var(--text-subtle)' }}
                                 onClick={() => { setEditId(l.id); setEditName(l.name); }}
-                            >✏️</button>
+                            >
+                                <Pencil size={12} strokeWidth={2} />
+                            </button>
 
                             {/* Delete */}
                             <button
-                                className="btn btn-sm btn-link p-0"
+                                className="btn btn-sm btn-link p-0 d-flex align-items-center label-action-btn"
                                 title="Delete label"
-                                style={{ fontSize: '0.78rem', color: 'var(--danger)', opacity: 0.7 }}
+                                style={{ color: 'var(--danger)' }}
                                 onClick={() => removeLabel(l.id)}
-                            >✕</button>
+                            >
+                                <X size={13} strokeWidth={2.5} />
+                            </button>
                         </>
                     )}
                 </div>
@@ -158,10 +172,12 @@ export default function LabelManager({ onSelect }) {
                 />
                 <button
                     type="submit"
-                    className="btn btn-sm btn-outline-primary px-2"
+                    className="btn btn-sm btn-outline-primary px-2 d-flex align-items-center"
                     title="Add label"
                     style={{ flexShrink: 0 }}
-                >+</button>
+                >
+                    <Plus size={14} strokeWidth={2.5} />
+                </button>
             </form>
         </div>
     );

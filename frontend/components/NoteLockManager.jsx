@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Lock, KeyRound, LockOpen } from 'lucide-react';
 import { useNotes } from '../context/NoteContext';
 
 function Field({ label, name, value, onChange, error, autoFocus }) {
@@ -71,12 +72,21 @@ export default function NoteLockManager({ note, onClose }) {
         <div className="modal d-block" style={{backgroundColor:'rgba(0,0,0,0.5)',zIndex:1060}} onClick={e=>e.target===e.currentTarget&&onClose()}>
             <div className="modal-dialog modal-dialog-centered" style={{maxWidth:400}} onClick={e=>e.stopPropagation()}>
                 <div className="modal-content">
-                    <div className="modal-header border-0 pb-0"><h6 className="modal-title fw-bold">🔒 {note.is_locked?'Manage Lock':'Lock Note'}</h6><button type="button" className="btn-close" onClick={onClose}/></div>
+                    <div className="modal-header border-0 pb-0">
+                        <h6 className="modal-title fw-bold d-flex align-items-center gap-2">
+                            <Lock size={15} strokeWidth={2} />
+                            {note.is_locked ? 'Manage Lock' : 'Lock Note'}
+                        </h6>
+                        <button type="button" className="btn-close" onClick={onClose}/>
+                    </div>
                     <div className="modal-body">
                         {msg ? <div className="alert alert-success py-2 text-center">✓ {msg}</div> : <>
                             {note.is_locked && <ul className="nav nav-pills mb-3 nav-fill" style={{fontSize:'0.82rem'}}>
-                                {[['change','🔑 Change Password'],['disable','🔓 Remove Lock']].map(([k,l])=>(
-                                    <li key={k} className="nav-item"><button className={`nav-link py-1 ${tab===k?'active':''}`} onClick={()=>setTab(k)}>{l}</button></li>))}
+                                {[
+                                    ['change', <><KeyRound size={13} className="me-1" />Change Password</>],
+                                    ['disable', <><LockOpen size={13} className="me-1" />Remove Lock</>]
+                                ].map(([k,l])=>(
+                                    <li key={k} className="nav-item"><button className={`nav-link py-1 d-flex align-items-center justify-content-center gap-1 ${tab===k?'active':''}`} onClick={()=>setTab(k)}>{l}</button></li>))}
                             </ul>}
                             {tab==='enable'  && <EnableForm  noteId={note.id} onDone={done} onCancel={onClose}/>}
                             {tab==='change'  && <ChangeForm  noteId={note.id} onDone={done} onCancel={onClose}/>}
