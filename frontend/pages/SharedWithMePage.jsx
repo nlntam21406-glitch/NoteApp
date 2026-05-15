@@ -16,11 +16,12 @@ function SharedWithMeInner() {
     const [loading,     setLoading]     = useState(true);
     const [activeShare, setActiveShare] = useState(null);
 
-    useEffect(() => {
+    const loadShares = () =>
         getSharedWithMe()
             .then(({ data }) => setShares(data.shares))
             .finally(() => setLoading(false));
-    }, []);
+
+    useEffect(() => { loadShares(); }, []);
 
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg)', fontFamily: 'var(--font-base)' }}>
@@ -171,7 +172,11 @@ function SharedWithMeInner() {
             {activeShare && (
                 <NoteEditor
                     note={activeShare.note}
-                    onClose={() => setActiveShare(null)}
+                    onClose={() => {
+                        setActiveShare(null);
+                        // Reload to get latest saved content
+                        if (activeShare.permission === 'edit') loadShares();
+                    }}
                     isShared={true}
                     sharePermission={activeShare.permission}
                 />
