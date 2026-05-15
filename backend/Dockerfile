@@ -30,6 +30,7 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 EXPOSE 10000
 
 CMD ["/bin/bash","-c","\
+    if [ \"$RENDER\" = \"true\" ]; then rm -f .env; fi; \
     php artisan key:generate --force --quiet; \
     php artisan storage:link --force --quiet; \
     php artisan migrate --force --seed --quiet; \
