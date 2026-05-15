@@ -11,13 +11,14 @@ async function getEcho() {
             import('pusher-js'),
         ]);
         window.Pusher = Pusher;
+        const isHttps = window.location.protocol === 'https:';
         echoInstance = new Echo({
             broadcaster: 'reverb',
             key: import.meta.env.VITE_REVERB_APP_KEY || 'noteapp',
             wsHost: window.location.hostname,
-            wsPort: parseInt(import.meta.env.VITE_REVERB_PORT || '8080'),
-            wssPort: parseInt(import.meta.env.VITE_REVERB_PORT || '8080'),
-            forceTLS: (import.meta.env.VITE_REVERB_SCHEME || 'http') === 'https',
+            wsPort: window.location.port || (isHttps ? 443 : 80),
+            wssPort: window.location.port || (isHttps ? 443 : 80),
+            forceTLS: isHttps,
             enabledTransports: ['ws', 'wss'],
             authEndpoint: '/api/broadcasting/auth',
             auth: { headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' } },
