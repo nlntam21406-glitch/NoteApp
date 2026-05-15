@@ -13,13 +13,13 @@ class DatabaseSeeder extends Seeder {
         $personal=Label::firstOrCreate(['user_id'=>$admin->id,'name'=>'Personal']);
         $ideas=Label::firstOrCreate(['user_id'=>$admin->id,'name'=>'Ideas']);
 
-        $n1=Note::create(['user_id'=>$admin->id,'title'=>'Welcome to NoteApp 🎉','content'=>"Your note-taking app is ready!\n\n✅ Auto-save (no save button)\n✅ Pin notes to top\n✅ Lock notes with password\n✅ Share with other users\n✅ Works offline (PWA)\n\nClick '+ New note' to start!",'is_pinned'=>true,'pinned_at'=>now()]);
+        $n1=Note::create(['user_id'=>$admin->id,'title'=>'Welcome to NoteApp','content'=>"Your note-taking app is ready!\n\n- Auto-save (no save button)\n- Pin notes to top\n- Lock notes with password\n- Share with other users\n- Works offline (PWA)\n\nClick '+ New note' to start!",'is_pinned'=>true,'pinned_at'=>now()]);
         $n1->labels()->attach([$personal->id]);
 
         $n2=Note::create(['user_id'=>$admin->id,'title'=>'Project Meeting Notes','content'=>"Action items:\n- Update documentation\n- Fix bug #123\n- Deploy to staging"]);
         $n2->labels()->attach([$work->id]);
 
-        $n3=Note::create(['user_id'=>$admin->id,'title'=>'App Ideas 💡','content'=>"• Real-time collaboration\n• Dark mode support\n• Offline PWA sync\n• Label organization"]);
+        $n3=Note::create(['user_id'=>$admin->id,'title'=>'App Ideas','content'=>"• Real-time collaboration\n• Dark mode support\n• Offline PWA sync\n• Label organization"]);
         $n3->labels()->attach([$ideas->id]);
 
         Note::create(['user_id'=>$admin->id,'title'=>'Shopping List','content'=>"☐ Milk\n☐ Eggs\n☐ Bread\n☐ Coffee"]);
