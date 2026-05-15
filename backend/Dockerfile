@@ -27,11 +27,10 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
     && php artisan key:generate --force --quiet \
     && composer dump-autoload --optimize --quiet
 
-EXPOSE 8000 8080
+EXPOSE 10000
 
 CMD ["/bin/bash","-c","\
     php artisan key:generate --force --quiet; \
     php artisan storage:link --force --quiet; \
     php artisan migrate --force --seed --quiet; \
-    php artisan reverb:start --host=0.0.0.0 --port=8080 --no-interaction & \
-    php artisan serve --host=0.0.0.0 --port=8000"]
+    php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
