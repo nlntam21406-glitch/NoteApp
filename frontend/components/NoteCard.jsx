@@ -65,7 +65,7 @@ function Labels({ labels }) {
         <div className="d-flex flex-wrap gap-1 mt-2">
             {labels.slice(0, 3).map(l => (
                 <span key={l.id} className="badge"
-                    style={{ background: '#ede9fe', color: '#6d28d9', fontSize: '0.68rem', fontWeight: 500 }}>
+                    style={{ background: 'var(--badge-bg)', color: 'var(--badge-color)', fontSize: '0.68rem', fontWeight: 500 }}>
                     {l.name}
                 </span>
             ))}
@@ -140,17 +140,28 @@ export function GridCard({ note, onOpen }) {
     const prefs = user?.preferences ?? {};
     const isDark = prefs.theme === 'dark';
     const rawColor = note.color || prefs.noteColor || '#ffffff';
-    const noteColor = adaptColorForTheme(rawColor, isDark);
+    
+    // In dark mode, we use surface background and a colored left border.
+    // In light mode, we use the pastel background color.
+    const noteColor = isDark ? 'var(--surface)' : adaptColorForTheme(rawColor, false);
+    const borderLeftColor = isDark && rawColor !== '#ffffff' ? adaptColorForTheme(rawColor, true) : null;
+    
     const fontSizeMap = { small: '0.82rem', medium: '0.9rem', large: '1rem' };
     const fontSize = fontSizeMap[prefs.fontSize] || '0.9rem';
 
-    const pinnedBorder = note.is_pinned ? '2px solid var(--warning)' : '1.5px solid var(--border)';
+    const pinnedBorder = note.is_pinned ? '1px solid var(--warning)' : '1px solid var(--border)';
 
     return (
         <>
             <div
                 className="card note-card-grid h-100"
-                style={{ cursor: 'pointer', border: pinnedBorder, borderRadius: 'var(--radius-md)', background: noteColor }}
+                style={{ 
+                    cursor: 'pointer', 
+                    border: pinnedBorder, 
+                    borderLeft: borderLeftColor ? `4px solid ${borderLeftColor}` : pinnedBorder,
+                    borderRadius: 'var(--radius-md)', 
+                    background: noteColor 
+                }}
                 onClick={() => onOpen(note)}
             >
                 {/* Thumbnail image */}
@@ -159,9 +170,9 @@ export function GridCard({ note, onOpen }) {
                         style={{ height: 130, objectFit: 'cover', borderRadius: 'calc(var(--radius-md) - 1.5px) calc(var(--radius-md) - 1.5px) 0 0' }} />
                 )}
 
-                <div className="card-body py-2 px-3">
+                <div className="card-body py-3 px-4 d-flex flex-column gap-2">
                     {/* Icons row + menu */}
-                    <div className="d-flex justify-content-between align-items-start mb-1">
+                    <div className="d-flex justify-content-between align-items-start">
                         <NoteIcons note={note} />
                         <div className="position-relative" onClick={e => e.stopPropagation()}>
                             <button
@@ -186,25 +197,27 @@ export function GridCard({ note, onOpen }) {
 
                     {/* Title */}
                     {note.title && (
-                        <h6 className="card-title mb-1 fw-semibold text-truncate" style={{ fontSize: '0.95rem' }}>
+                        <h6 className="card-title mb-0 fw-bold text-truncate" style={{ fontSize: '1rem', letterSpacing: '-0.01em' }}>
                             {note.title}
                         </h6>
                     )}
 
                     {/* Content preview */}
                     {note.content && (
-                        <p className="card-text text-muted small mb-1"
-                            style={{ display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5, fontSize }}>
+                        <p className="card-text text-muted small mb-0"
+                            style={{ display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.6, fontSize }}>
                             {note.content.slice(0, 200)}
                         </p>
                     )}
 
-                    <Labels labels={note.labels} />
+                    <div className="mt-auto pt-2">
+                        <Labels labels={note.labels} />
 
-                    {/* Timestamp */}
-                    <p className="text-muted mb-0 mt-2" style={{ fontSize: '0.7rem' }}>
-                        {fmt(note.updated_at)}
-                    </p>
+                        {/* Timestamp */}
+                        <p className="text-muted mb-0 mt-2" style={{ fontSize: '0.75rem', fontWeight: 500 }}>
+                            {fmt(note.updated_at)}
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -223,17 +236,25 @@ export function ListRow({ note, onOpen }) {
     const prefs = user?.preferences ?? {};
     const isDark = prefs.theme === 'dark';
     const rawColor = note.color || prefs.noteColor || '#ffffff';
-    const noteColor = adaptColorForTheme(rawColor, isDark);
+    
+    const noteColor = isDark ? 'var(--surface)' : adaptColorForTheme(rawColor, false);
+    const borderLeftColor = isDark && rawColor !== '#ffffff' ? adaptColorForTheme(rawColor, true) : null;
+    
     const fontSizeMap = { small: '0.82rem', medium: '0.9rem', large: '1rem' };
     const fontSize = fontSizeMap[prefs.fontSize] || '0.9rem';
 
-    const pinnedBorder = note.is_pinned ? '1.5px solid var(--warning)' : '1.5px solid var(--border)';
+    const pinnedBorder = note.is_pinned ? '1px solid var(--warning)' : '1px solid var(--border)';
 
     return (
         <>
             <div
-                className="note-card-list d-flex align-items-center gap-3 px-3 py-2 rounded-3 mb-2"
-                style={{ cursor: 'pointer', border: pinnedBorder, position: 'relative', zIndex: menu ? 10 : 1, background: noteColor }}
+                className="note-card-list d-flex align-items-center gap-3 px-4 py-3 rounded-3 mb-3"
+                style={{ 
+                    cursor: 'pointer', 
+                    border: pinnedBorder, 
+                    borderLeft: borderLeftColor ? `4px solid ${borderLeftColor}` : pinnedBorder,
+                    position: 'relative', zIndex: menu ? 10 : 1, background: noteColor 
+                }}
                 onClick={() => onOpen(note)}
             >
                 {/* Thumbnail */}
@@ -241,16 +262,16 @@ export function ListRow({ note, onOpen }) {
                     <img src={note.images[0]} alt=""
                         style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 'var(--radius-sm)', flexShrink: 0 }} />
                 )}
-
-                <div className="flex-grow-1 overflow-hidden">
+                {/* Info */}
+                <div className="flex-grow-1 overflow-hidden d-flex flex-column gap-1">
                     <div className="d-flex align-items-center gap-2">
-                        <span className="fw-semibold text-truncate" style={{ fontSize: '0.95rem' }}>
-                            {note.title || <span className="text-muted fst-italic">Untitled</span>}
-                        </span>
+                        <h6 className="mb-0 fw-bold text-truncate" style={{ fontSize: '1rem', letterSpacing: '-0.01em' }}>
+                            {note.title || <span className="text-muted">Untitled</span>}
+                        </h6>
                         <NoteIcons note={note} />
                     </div>
                     {note.content && (
-                        <span className="text-muted small text-truncate d-block" style={{ lineHeight: 1.4, fontSize }}>
+                        <span className="text-muted small text-truncate d-block" style={{ lineHeight: 1.6, fontSize }}>
                             {note.content.slice(0, 100)}
                         </span>
                     )}

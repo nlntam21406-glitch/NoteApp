@@ -286,8 +286,21 @@ function HomeInner() {
 
                     {/* Loading */}
                     {loading ? (
-                        <div style={{ textAlign: 'center', padding: '60px 0' }}>
-                            <div className="spinner-border text-primary" />
+                        <div style={{ padding: '0 0' }}>
+                            <section style={{ marginBottom: 28 }}>
+                                <p className="skeleton-box" style={{...sectionLabel, width: 80, height: 16, marginBottom: 16, borderRadius: 4}} />
+                                <div style={gridStyle}>
+                                    {[1, 2, 3, 4].map(i => (
+                                        <div key={i} className="skeleton-card">
+                                            <div className="skeleton-box" style={{ width: '70%', height: 20 }} />
+                                            <div className="skeleton-box" style={{ width: '100%', height: 12, marginTop: 8 }} />
+                                            <div className="skeleton-box" style={{ width: '90%', height: 12 }} />
+                                            <div className="skeleton-box" style={{ width: '40%', height: 12 }} />
+                                            <div className="skeleton-box" style={{ width: 60, height: 20, marginTop: 'auto', borderRadius: 99 }} />
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
                         </div>
 
                     ) : notes.length === 0 ? (
