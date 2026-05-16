@@ -94,12 +94,12 @@ function Menu({ note, onPin, onEdit, onDelete, onClose }) {
     // Lắng nghe event đóng tất cả menu — chỉ đóng nếu không phải chính nó trigger
     useEffect(() => {
         const handler = (e) => {
-            if (e.detail?.skipClose) return;
+            if (e.detail?.openingNoteId === note.id) return;
             onClose();
         };
         window.addEventListener('close-note-menus', handler);
         return () => window.removeEventListener('close-note-menus', handler);
-    }, [onClose]);
+    }, [onClose, note.id]);
 
     return (
         <>
@@ -162,9 +162,8 @@ export function GridCard({ note, onOpen }) {
     const pinnedBorder = note.is_pinned ? '1px solid var(--warning)' : '1px solid var(--border)';
 
     const openMenu = () => {
-        // Broadcast đóng tất cả menu khác trước
-        window.dispatchEvent(new CustomEvent('close-note-menus'));
-        // Sau đó mới mở menu của card này
+        // Broadcast đóng tất cả menu khác, nhưng skip menu của card này
+        window.dispatchEvent(new CustomEvent('close-note-menus', { detail: { openingNoteId: note.id } }));
         setMenu(true);
     };
 
@@ -260,9 +259,8 @@ export function ListRow({ note, onOpen }) {
     const pinnedBorder = note.is_pinned ? '1px solid var(--warning)' : '1px solid var(--border)';
 
     const openMenu = () => {
-        // Broadcast đóng tất cả menu khác trước
-        window.dispatchEvent(new CustomEvent('close-note-menus'));
-        // Sau đó mới mở menu của card này
+        // Broadcast đóng tất cả menu khác, nhưng skip menu của card này
+        window.dispatchEvent(new CustomEvent('close-note-menus', { detail: { openingNoteId: note.id } }));
         setMenu(true);
     };
 
