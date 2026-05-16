@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Pin, Lock, Share2, MoreVertical, Pencil, PinOff, Trash2 } from 'lucide-react';
 import { useNotes } from '../context/NoteContext';
 import { useAuth } from '../context/AuthContext';
@@ -91,6 +91,16 @@ function useDeleteFlow(note) {
 }
 
 function Menu({ note, onPin, onEdit, onDelete, onClose }) {
+    // Lắng nghe event đóng tất cả menu — chỉ đóng nếu không phải chính nó trigger
+    useEffect(() => {
+        const handler = (e) => {
+            if (e.detail?.skipClose) return;
+            onClose();
+        };
+        window.addEventListener('close-note-menus', handler);
+        return () => window.removeEventListener('close-note-menus', handler);
+    }, [onClose]);
+
     return (
         <>
             <div className="position-fixed top-0 start-0 w-100 h-100" style={{ zIndex: 1998 }} onClick={onClose} />
@@ -151,6 +161,13 @@ export function GridCard({ note, onOpen }) {
 
     const pinnedBorder = note.is_pinned ? '1px solid var(--warning)' : '1px solid var(--border)';
 
+    const openMenu = () => {
+        // Broadcast đóng tất cả menu khác trước
+        window.dispatchEvent(new CustomEvent('close-note-menus'));
+        // Sau đó mới mở menu của card này
+        setMenu(true);
+    };
+
     return (
         <>
             <div
@@ -164,7 +181,6 @@ export function GridCard({ note, onOpen }) {
                 }}
                 onClick={() => onOpen(note)}
             >
-                {/* Thumbnail image */}
                 {note.images?.[0] && (
                     <img src={note.images[0]} alt="" className="card-img-top"
                         style={{ height: 130, objectFit: 'cover', borderRadius: 'calc(var(--radius-md) - 1.5px) calc(var(--radius-md) - 1.5px) 0 0' }} />
@@ -177,7 +193,7 @@ export function GridCard({ note, onOpen }) {
                         <div className="position-relative" onClick={e => e.stopPropagation()}>
                             <button
                                 className="btn btn-sm btn-link text-secondary p-0 note-menu-btn"
-                                onClick={() => setMenu(v => !v)}
+                                onClick={() => menu ? setMenu(false) : openMenu()}
                                 id={`grid-menu-${note.id}`}
                                 title="More options"
                             >
@@ -195,14 +211,12 @@ export function GridCard({ note, onOpen }) {
                         </div>
                     </div>
 
-                    {/* Title */}
                     {note.title && (
                         <h6 className="card-title mb-0 fw-bold text-truncate" style={{ fontSize: '1rem', letterSpacing: '-0.01em' }}>
                             {note.title}
                         </h6>
                     )}
 
-                    {/* Content preview */}
                     {note.content && (
                         <p className="card-text text-muted small mb-0"
                             style={{ display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.6, fontSize }}>
@@ -245,6 +259,13 @@ export function ListRow({ note, onOpen }) {
 
     const pinnedBorder = note.is_pinned ? '1px solid var(--warning)' : '1px solid var(--border)';
 
+    const openMenu = () => {
+        // Broadcast đóng tất cả menu khác trước
+        window.dispatchEvent(new CustomEvent('close-note-menus'));
+        // Sau đó mới mở menu của card này
+        setMenu(true);
+    };
+
     return (
         <>
             <div
@@ -257,7 +278,6 @@ export function ListRow({ note, onOpen }) {
                 }}
                 onClick={() => onOpen(note)}
             >
-                {/* Thumbnail */}
                 {note.images?.[0] && (
                     <img src={note.images[0]} alt=""
                         style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 'var(--radius-sm)', flexShrink: 0 }} />
@@ -278,13 +298,12 @@ export function ListRow({ note, onOpen }) {
                     <Labels labels={note.labels} />
                 </div>
 
-                {/* Right side: time + menu */}
                 <div className="d-flex flex-column align-items-end gap-1 flex-shrink-0" onClick={e => e.stopPropagation()}>
                     <span className="text-muted" style={{ fontSize: '0.7rem' }}>{fmt(note.updated_at)}</span>
                     <div className="position-relative">
                         <button
                             className="btn btn-sm btn-link text-secondary p-0 note-menu-btn"
-                            onClick={() => setMenu(v => !v)}
+                            onClick={() => menu ? setMenu(false) : openMenu()}
                             id={`list-menu-${note.id}`}
                             title="More options"
                         >
