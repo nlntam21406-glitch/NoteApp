@@ -22,6 +22,8 @@ COPY resources/     resources/
 COPY routes/        routes/
 COPY bootstrap_app.php bootstrap/app.php
 COPY .env.docker    .env
+COPY render-start.sh render-start.sh
+RUN chmod +x render-start.sh
 
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && php artisan key:generate --force --quiet \
@@ -29,9 +31,4 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 
 EXPOSE 10000
 
-CMD ["/bin/bash","-c","\
-    if [ \"$RENDER\" = \"true\" ]; then rm -f .env; fi; \
-    php artisan key:generate --force --quiet; \
-    php artisan storage:link --force --quiet; \
-    php artisan migrate --force --seed --quiet; \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+CMD ["./render-start.sh"]
