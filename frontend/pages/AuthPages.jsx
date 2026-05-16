@@ -55,7 +55,11 @@ export function LoginPage() {
     const submit = async e => {
         e.preventDefault(); setErr(''); setLoad(true);
         try { await login(f.email, f.password); navigate('/'); }
-        catch (e) { setErr(e.response?.data?.message || 'Login failed. Please check your credentials.'); }
+        catch (e) {
+            const msg = e.response?.data?.message || 'Login failed. Please check your credentials.';
+            setErr(msg);
+            window.alert('Lỗi đăng nhập:\n' + msg);
+        }
         finally { setLoad(false); }
     };
 
@@ -113,8 +117,14 @@ export function RegisterPage() {
         try { await register(f.email, f.display_name, f.password, f.password_confirmation); navigate('/'); }
         catch (e) {
             const ae = e.response?.data?.errors;
-            if (ae) setErrs(Object.fromEntries(Object.entries(ae).map(([k, v]) => [k, v[0]])));
-            else setErrs({ general: e.response?.data?.message || 'Registration failed.' });
+            if (ae) {
+                setErrs(Object.fromEntries(Object.entries(ae).map(([k, v]) => [k, v[0]])));
+                window.alert('Lỗi đăng ký:\n' + Object.values(ae).map(v => v[0]).join('\n'));
+            } else {
+                const msg = e.response?.data?.message || 'Registration failed.';
+                setErrs({ general: msg });
+                window.alert('Lỗi đăng ký:\n' + msg);
+            }
         }
         finally { setLoad(false); }
     };
