@@ -1,10 +1,10 @@
 ================================================================
   NOTEAPP — WEB PROGRAMMING FINAL PROJECT
-  503073 – WEB PROGRAMMING & APPLICATIONS | Semester II/2024-2025
+  503073 – WEB PROGRAMMING & APPLICATIONS | Semester II/2025-2026
 ================================================================
 
 DEMO VIDEO: demo.mp4 (included in submission)
-PUBLIC URL:  https://noteapp.yourdomain.com  (if deployed)
+PUBLIC URL:  https://note-app-blond-psi.vercel.app
 
 ----------------------------------------------------------------
 ACCOUNTS FOR GRADING (pre-loaded)
@@ -31,7 +31,7 @@ PREREQUISITES: Docker Desktop installed and running.
 STEP 1 — Configure email (optional, for verification/reset emails)
   Copy .env.example to .env in backend/ and set:
     MAIL_HOST, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
-  (Use Mailtrap.io for testing — free sandbox)
+  (Use Gmail App Password for testing — as pre-configured in .env.docker)
 
 STEP 2 — Build and start
   docker compose up --build -d
@@ -106,49 +106,49 @@ PREREQUISITES: PHP 8.2+, Composer 2, Node 20+, MySQL 8
 ================================================================
 
   ACCOUNT MANAGEMENT (2.0 pts)
-  ✅ 1.  User registration (email + display_name + password ×2 only)
-  ✅ 2.  Email account activation (link-based)
-  ✅ 3.  Login / Logout
-  ✅ 4.  Password reset (link OR OTP via email)
-  ✅ 5.  View profile & avatar (display_name, email)
-  ✅ 6.  Edit profile (display_name via preferences)
-  ✅ 7.  Change password (from preferences)
-  ✅ 8.  User preferences (font size, note color, light/dark theme)
+  1.  User registration (email + display_name + password ×2 only)
+  2.  Email account activation (link-based)
+  3.  Login / Logout
+  4.  Password reset (link OR OTP via email)
+  5.  View profile & avatar (display_name, email)
+  6.  Edit profile (display_name via preferences)
+  7.  Change password (from preferences)
+  8.  User preferences (font size, note color, light/dark theme)
 
   SIMPLE NOTE MANAGEMENT (4.0 pts)
-  ✅ 9.  Display notes in list view
-  ✅ 10. Display notes in grid view (DEFAULT)
-  ✅ 11. Create note (title + content only, no extra fields)
-  ✅ 12. Update note (same UI as create, auto-save, NO save button)
-  ✅ 13. Delete note (confirmation dialog always shown)
-  ✅ 14. Auto-save (500ms debounce, no save button)
-  ✅ 15. Attach images to notes (one or multiple)
-  ✅ 16. Pin notes to top (latest pinned = first)
-  ✅ 17. Live search (300ms debounce, title + content, no search button)
-  ✅ 18. Label management (add / rename / delete — rename auto-updates notes)
-  ✅ 19. Attach labels to notes (multi-label per note)
-  ✅ 20. Filter notes by label
+  9.  Display notes in list view
+  10. Display notes in grid view (DEFAULT)
+  11. Create note (title + content only, no extra fields)
+  12. Update note (same UI as create, auto-save, NO save button)
+  13. Delete note (confirmation dialog always shown)
+  14. Auto-save (500ms debounce, no save button)
+  15. Attach images to notes (one or multiple)
+  16. Pin notes to top (latest pinned = first)
+  17. Live search (300ms debounce, title + content, no search button)
+  18. Label management (add / rename / delete — rename auto-updates notes)
+  19. Attach labels to notes (multi-label per note)
+  20. Filter notes by label
 
   ADVANCED NOTE MANAGEMENT (2.0 pts)
-  ✅ 21. Enable / disable password lock on note
-  ✅ 22. Password protection: prompt before view/edit/delete
+  21. Enable / disable password lock on note
+  22. Password protection: prompt before view/edit/delete
          Change password (requires current pw + new ×2)
-  ✅ 23. Share note via email (read-only or edit permission)
+  23. Share note via email (read-only or edit permission)
          Owner can revoke / change permission anytime
-  ✅ 24. Real-time collaboration via WebSocket (Laravel Reverb)
+  24. Real-time collaboration via WebSocket (Laravel Reverb)
          Edit-permission recipients co-edit simultaneously
 
   OTHER REQUIREMENTS (2.0 pts)
-  ✅ 25. UI/UX — responsive, Bootstrap 5, clean design
-  ✅ 26. Responsive design (mobile, tablet, desktop)
-  ✅ 27. Offline capabilities — PWA + Service Worker + IndexedDB
+  25. UI/UX — responsive, Bootstrap 5, clean design
+  26. Responsive design (mobile, tablet, desktop)
+  27. Offline capabilities — PWA + Service Worker + IndexedDB
          Sync queue flushes on reconnect
-  ✅ 28. Docker Compose deployment
+  28. Docker Compose deployment
 
   CODING GUIDELINES
-  ✅ No hardcoded URLs or ports anywhere in frontend code
-  ✅ All API calls use relative paths (/api/...)
-  ✅ Nginx reverse-proxy handles routing (no CORS issues)
+  No hardcoded URLs or ports anywhere in frontend code
+  All API calls use relative paths (/api/...)
+  Nginx reverse-proxy handles routing (no CORS issues)
 
 ================================================================
   PROJECT STRUCTURE
@@ -224,11 +224,4 @@ noteapp/
 │   └── nginx.conf                 (reverse-proxy, no hardcoded ports)
 │
 ├── docker-compose.yml
-└── readme.txt                     ← this file
-
-================================================================
-  CONTACT / QUESTIONS
-================================================================
-Email: maivanmanh@tdtu.edu.vn
-
-
+└── readme.txt                     (this file)
