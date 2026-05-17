@@ -7,3 +7,8 @@ export const revokeShare      = (nId, sId)         => api.delete(`/notes/${nId}/
 export const getSharedWithMe  = ()                 => api.get('/shared-with-me');
 export const getSharedNote    = (id)               => api.get(`/shared-notes/${id}`);
 export const updateSharedNote = (id, d)            => api.put(`/shared-notes/${id}`, d);
+export const uploadSharedNoteImages = (id, files) => {
+    const f = new FormData(); files.forEach(x => f.append('images[]', x));
+    return api.post(`/shared-notes/${id}/images`, f, { headers: { 'Content-Type': 'multipart/form-data' } });
+};
+export const removeSharedNoteImage = (id, path) => api.delete(`/shared-notes/${id}/images`, { data: { path } });

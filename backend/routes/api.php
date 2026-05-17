@@ -62,4 +62,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('shared-with-me',    [ShareController::class, 'sharedWithMe']);
     Route::get('shared-notes/{id}', [SharedNoteEditController::class, 'show']);
     Route::put('shared-notes/{id}', [SharedNoteEditController::class, 'update']);
+    Route::post('shared-notes/{id}/images',   [SharedNoteEditController::class, 'uploadImages']);
+    Route::delete('shared-notes/{id}/images', [SharedNoteEditController::class, 'removeImage']);
 });

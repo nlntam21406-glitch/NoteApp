@@ -12,7 +12,8 @@ class UserPreferencesController extends Controller {
             'noteColor' => ['sometimes','string','regex:/^#[0-9A-Fa-f]{6}$/'],
             'theme'     => ['sometimes','in:light,dark'],
         ]);
-        $updated = array_merge($request->user()->preferences, $data);
+        $current = $request->user()->preferences ?? [];
+        $updated = array_merge($current, $data);
         $request->user()->update(['preferences'=>$updated]);
         return response()->json(['message'=>'Preferences updated.','preferences'=>$updated]);
     }

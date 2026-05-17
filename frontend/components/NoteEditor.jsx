@@ -5,7 +5,7 @@ import { useNotes }         from '../context/NoteContext';
 import { useAutoSave }      from '../hooks/useAutoSave';
 import { useCollaboration } from '../hooks/useCollaboration';
 import { unlockTokenStore } from '../utils/unlockTokenStore';
-import { updateSharedNote } from '../api/shareApi';
+import { updateSharedNote, uploadSharedNoteImages, removeSharedNoteImage } from '../api/shareApi';
 import NoteUnlockModal      from './NoteUnlockModal';
 import NoteLockManager      from './NoteLockManager';
 import { NoteIcons }        from './NoteCard';
@@ -75,6 +75,7 @@ export default function NoteEditor({ note, onClose, onShare, isShared = false, s
     const [showGate,    setShowGate]  = useState(gated);
     const [showLockMgr, setLockMgr]  = useState(false);
     const [, setCollabs]              = useState([]);
+    const [localImages, setLocalImages] = useState(note.images || []);
 
     // For shared notes with edit permission, use the recipient-specific API
     const sharedSaveFn = (isShared && sharePermission === 'edit')
@@ -96,14 +97,25 @@ export default function NoteEditor({ note, onClose, onShare, isShared = false, s
     const handleImages = useCallback(async e => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
-        await addImages(note.id, files);
+        if (isShared && sharePermission === 'edit') {
+            const { data } = await uploadSharedNoteImages(note.id, files);
+            setLocalImages(data.images);
+        } else {
+            await addImages(note.id, files);
+        }
         e.target.value = '';
-    }, [note.id, addImages]);
+    }, [note.id, addImages, isShared, sharePermission]);
 
     const handleRemoveImage = useCallback(async url => {
         const path = url.split('/storage/')[1];
-        if (path) await delImage(note.id, path);
-    }, [note.id, delImage]);
+        if (!path) return;
+        if (isShared && sharePermission === 'edit') {
+            await removeSharedNoteImage(note.id, path);
+            setLocalImages(prev => prev.filter(i => !i.includes(path)));
+        } else {
+            await delImage(note.id, path);
+        }
+    }, [note.id, delImage, isShared, sharePermission]);
 
     if (!note) return null;
     if (showGate) return <NoteUnlockModal note={note} onUnlocked={() => setShowGate(false)} onCancel={onClose} />;
@@ -241,9 +253,11 @@ export default function NoteEditor({ note, onClose, onShare, isShared = false, s
                             />
 
                             {/* Images */}
-                            {note.images?.length > 0 && (
+                            {(() => {
+                                const displayImages = isShared ? localImages : (note.images || []);
+                                return displayImages.length > 0 && (
                                 <div className="d-flex flex-wrap gap-2 mt-3">
-                                    {note.images.map(url => (
+                                    {displayImages.map(url => (
                                         <div key={url} className="position-relative">
                                             <img
                                                 src={url} alt=""
@@ -264,7 +278,8 @@ export default function NoteEditor({ note, onClose, onShare, isShared = false, s
                                         </div>
                                     ))}
                                 </div>
-                            )}
+                            );
+                            })()}
 
                             {/* Labels */}
                             {!isShared && <div className="mt-3"><LabelPicker note={note} /></div>}
