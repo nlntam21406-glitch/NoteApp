@@ -21,7 +21,7 @@ ACCOUNTS FOR GRADING (pre-loaded)
 ----------------------------------------------------------------
 Admin / Owner :  admin@noteapp.com      / Password123!
 Recipient     :  user2@noteapp.com      / Password123!
-(Both accounts have sample notes already created)
+(Only admin@noteapp.com has sample notes already created)
 
 ----------------------------------------------------------------
 TECH STACK
