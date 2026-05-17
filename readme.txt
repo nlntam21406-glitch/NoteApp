@@ -1,10 +1,20 @@
 ================================================================
-  NOTEAPP — WEB PROGRAMMING FINAL PROJECT
-  503073 – WEB PROGRAMMING & APPLICATIONS | Semester II/2025-2026
+  NOTEAPP - WEB PROGRAMMING FINAL PROJECT
+  503073 - WEB PROGRAMMING & APPLICATIONS | Semester II/2025-2026
 ================================================================
 
-DEMO VIDEO: demo.mp4 (included in submission)
-PUBLIC URL:  https://note-app-blond-psi.vercel.app
+----------------------------------------------------------------
+TEAM MEMBERS
+----------------------------------------------------------------
+Nguyen Le Nhat Tam - 524H0186
+Nguyen Gia Phat - 524H0117
+Le Do Minh Thanh - 524H0030
+
+----------------------------------------------------------------
+PROJECT LINKS
+----------------------------------------------------------------
+PUBLIC URL: https://note-app-blond-psi.vercel.app
+DEMO VIDEO: https://drive.google.com/file/d/1KWF65CebB2MXr3_MooVLThSMqb2gPMwS/view?usp=sharing
 
 ----------------------------------------------------------------
 ACCOUNTS FOR GRADING (pre-loaded)
